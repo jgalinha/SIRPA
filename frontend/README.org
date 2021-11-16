@@ -1,0 +1,139 @@
+#+TITLE: SIRPA Frontend README
+#+author:    José Galinha
+#+email:     jbgalinha@gmail.com
+
+
+* Introduction
+
+This is the orgfile with all the information to develop the frontend app of SIRPA project
+
+* Pre-requisites
+
+- docker
+- docker-compose
+- node >= 14.0.0
+- npm >= 5.6
+
+* Setup
+
+1. Create dockerfile if not created yet
+2. Build docker image from dockerfile
+3. Run docker container from the created image
+4. Code
+
+* Dockerfile
+#+BIND: app-name sirpa
+#+BIND: app-version 0.0.1-dev
+
+- Docker commands
+
+  + ~docker ps~ - see running container's
+  + ~docker images~ - list available images
+  + ~docker exec -it web bash~ -  run bash shell inside container
+
+- Dockerfile for development
+  #+BEGIN_SRC dockerfile :tangle Dockerfile :hlines yes
+# Docker image to run SIRPA frontend app in development
+# Projecto Integrado
+# Lic. Eng. Informática
+# ESTIG - IPBEJA
+
+# Node image to donwload from docker
+FROM node:16.13.0-bullseye as dev
+
+# Setting working dir inside image
+WORKDIR /app
+
+# Copy package file to isntall app dependency's
+COPY package.json package.json
+COPY package-lock.json package-lock.json
+
+# Run npm install inside container
+RUN npm install
+
+# Copy all project folders from local to containter
+COPY . .
+
+# CMD to run when the container runs
+CMD ["npm", "run", "start"]
+  #+END_SRC
+
+- Dockerfile for production
+  #+BEGIN_SRC dockerfile :tangle Dockerfile-prod :hlines yes
+# Docker image to run SIRPA frontend app in production
+# Projecto Integrado
+# Lic. Eng. Informática
+# ESTIG - IPBEJA
+
+# Node image to donwload from docker
+FROM node:16.13.0-bullseye as build
+
+# Setting working dir inside image
+WORKDIR /app
+
+# Copy package file to isntall app dependency's
+COPY package.json package.json
+COPY package-lock.json package-lock.json
+
+# Install project with a clean state
+RUN npm ci --production
+
+# Copy all project folders from local to containter
+COPY . .
+
+# Build project for production
+RUN npm run build
+
+# NGINX Web Server
+FROM nginx:1.12-alpine as prod
+
+COPY --from=build /app/build /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "deamon off;"]
+  #+END_SRC
+
+- Build the docker image from dockerfile for development
+  #+BEGIN_SRC shell :tangle no :hlines yes :results output
+# Build docker image from dockerfile
+# -t is to give the image a tag, a "name"
+
+docker build -t sirpa:0.0.1-dev .
+  #+END_SRC
+
+- Build the docker image from dockerfile for production
+  #+BEGIN_SRC shell :tangle no :hlines yes :results output
+# Build docker image from dockerfile
+# -t is to give the image a tag, a "name"
+
+docker build -t sirpa:0.0.1-prod .
+  #+END_SRC
+
+- Run docker image for development
+  #+BEGIN_SRC shell :tangle no :results output
+# Run docker image
+# --rm remove the container when stop (not stay paused)
+# -it interactive terminal
+# -d run the container in the background
+# -name container name
+# -p port map
+# -v volume -> -v $(pwd):/app to map the local folder to the container folder
+
+docker run --rm -it --name sirpa-app -v $(pwd):/app -p 3000:3000 sirpa:0.0.1-dev
+# fish shell
+# docker run --rm -it --name web -v (pwd):/app -p 3000:3000 sirpa:0.0.1-dev
+  #+END_SRC
+
+- Run docker image for production
+  #+BEGIN_SRC shell :tangle no :results output
+docker run -rm -it --name sirpa-app -p 3000:80 sirpa:0.0.1-prod
+  #+END_SRC
+
+* React
+
+- Create React App
+  #+BEGIN_SRC shell :tangle no
+  # Dont need to run it
+  npx create-react-app sirpa
+  #+END_SRC
