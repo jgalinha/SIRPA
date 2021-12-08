@@ -12,4 +12,4 @@ O sistema tem como objectivo o registo de presença dos alunos via QRCode
 
 * Frontend
 
-Frontend [[org:estig/PI/SIRPA/frontend/README.org][README.org]]
+Frontend [[file:frontend/README.org][README.org]]
