@@ -1,0 +1,7 @@
+#+TITLE: SIRPA - Backend
+#+author:    José Galinha
+#+email:     jbgalinha@gmail.com
+
+* Introduction
+
+This is the orgfile with all the information about the development of the SIRPA backend
