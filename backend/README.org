@@ -60,11 +60,9 @@ docker pull dpage/pgadmin4
 2. Run pgAdmin docker image
   #+begin_src shell :tangle no :hlines yes :results no
 docker run -d \
-    --name sirpa_pgAdmin \
+    --name sirpa-pgAdmin \
     --env-file .env \
-    -p 8080:80 \
+    -p 16543:80 \
     dpage/pgadmin4
   #+end_src
   
-
-* Dockerfile
