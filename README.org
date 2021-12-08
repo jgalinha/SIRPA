@@ -1,0 +1,15 @@
+#+TITLE: SIRPA
+#+author:    José Galinha
+#+email:     jbgalinha@gmail.com
+
+
+* Introdução
+
+O *Sistema Integrado de Registo de Presenças em Aula (SIRPA)* é um sistema devolvido para a disciplina de Projeto Integrado da Licenciatura em Engenharia informátia da ESTIG.
+
+O sistema tem como objectivo o registo de presença dos alunos via QRCode
+
+
+* Frontend
+
+Frontend [[org:estig/PI/SIRPA/frontend/README.org][README.org]]
