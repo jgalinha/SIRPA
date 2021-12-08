@@ -13,3 +13,7 @@ O sistema tem como objectivo o registo de presença dos alunos via QRCode
 * Frontend
 
 Frontend [[file:frontend/README.org][README.org]]
+
+* Backend
+
+Backend [[file:backend/README.org][README.org]]

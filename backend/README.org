@@ -5,3 +5,66 @@
 * Introduction
 
 This is the orgfile with all the information about the development of the SIRPA backend
+
+* Pre-requisites
+
+- docker
+- docker-compose
+
+* Setup
+
+** Postgress configuration
+https://towardsdatascience.com/local-development-set-up-of-postgresql-with-docker-c022632f13ea
+
+1. Download docker postgres image
+
+  #+begin_src shell :tangle no :hlines yes :results no
+docker pull postgres
+  #+end_src
+
+2. Create a folder to store da database data
+
+  #+begin_src shell :tangle no :hlines yes :results no
+mkdir ~/sirpa_data/
+  #+end_src
+
+3. Run postgres image
+
+  #+begin_src shell :tangle no :hlines yes :results no
+docker run -d \
+    --name sirpa-postgres \
+    --env-file .env \
+    -v ~/sirpa_data/:/var/lib/postgresql/data \
+    -p 5432:5432 \
+    postgres
+  #+end_src
+
+To enter the container commandline you run the command:
+
+#+begin_src shell :tangle no :hlines yes :results no
+docker exec -it sirpa-postgres bash
+#+end_src
+
+To connect to database run:
+#+begin_src shell :tangle no :hlines yes :results no
+psql -h localhost -U postgres
+#+end_src
+
+** pgAdmin configuration (administration for postgresql)
+
+1. Download docker pdAdmin image
+  #+begin_src shell :tangle no :hlines yes :results no
+docker pull dpage/pgadmin4
+  #+end_src
+
+2. Run pgAdmin docker image
+  #+begin_src shell :tangle no :hlines yes :results no
+docker run -d \
+    --name sirpa_pgAdmin \
+    --env-file .env \
+    -p 8080:80 \
+    dpage/pgadmin4
+  #+end_src
+  
+
+* Dockerfile
