@@ -21,7 +21,7 @@ Backend [[file:backend/README.org][README.org]]
 * Docker Compose
 
 #+NAME: docker-compose.yml
-#+begin_src yml :tangle docker-compose.yml :hlines yes
+#+begin_src dockerfile :tangle docker-compose.yml :hlines yes
 version: '3'
 
 services:
@@ -83,3 +83,7 @@ docker-compose up -d
 # -d is to run in detach mode (backgroud)
 docker-compose down
  #+end_src
+
+* Bakcups
+
+rsync

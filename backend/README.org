@@ -10,6 +10,8 @@ This is the orgfile with all the information about the development of the SIRPA 
 
 - docker
 - docker-compose
+- Python 3.5+
+- poetry
 
 * Setup
 
@@ -65,4 +67,34 @@ docker run -d \
     -p 16543:80 \
     dpage/pgadmin4
   #+end_src
-  
+
+** fastAPI
+
+1. [[https://github.com/pdm-project/pdm][Install pdm package management tool]]
+
+2. Install FastAPI (no need to do, only for documentation)
+
+   1. Install poetry
+
+      https://python-poetry.org/docs/
+
+   2. Install FastAPI with poetry
+
+     #+begin_src shell
+poetry new api
+cd api
+poetry add fastapi
+poetry add uvicorn[standard]
+     #+end_src
+
+   3. Activate poetry shell (virtual environment)
+
+     #+begin_src shell
+poetry shell
+     #+end_src
+
+   4. Run uvicorn server (inside poetry shell)
+
+     #+begin_src shell
+uvicorn main:app --reload
+     #+end_src
