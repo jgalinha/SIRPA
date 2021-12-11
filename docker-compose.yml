@@ -3,7 +3,9 @@ version: '3'
 services:
     web:
         container_name: sirpa-app
-        image: sirpa:0.0.1-dev
+        # image: sirpa:0.0.1-dev
+        build:
+            context: './frontend/'
         ports:
             - "3000:3000"
         volumes:
@@ -11,6 +13,18 @@ services:
         networks:
           - sirpa-network
         command: npm start
+    api:
+        container_name: sirpa-api
+        # image: sirpa-api:0.0.1
+        build:
+            context: './backend/api'
+            dockerfile: '../Dockerfile-fastapi'
+        ports:
+            - "8000:8000"
+        volumes:
+            - './backend/api/api:/api'
+        networks:
+            - sirpa-network
     postgres:
         container_name: sirpa-postgres
         image: postgres
