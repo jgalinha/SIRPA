@@ -1,0 +1,141 @@
+#+TITLE: SIRPA - Backend
+#+author:    José Galinha
+#+email:     jbgalinha@gmail.com
+
+* Introduction
+
+This is the orgfile with all the information about the development of the SIRPA backend
+
+* Pre-requisites
+
+- docker
+- docker-compose
+- Python 3.5+
+- poetry
+
+* Setup
+
+** Postgress configuration
+https://towardsdatascience.com/local-development-set-up-of-postgresql-with-docker-c022632f13ea
+
+1. Download docker postgres image
+
+  #+begin_src shell :tangle no :hlines yes :results no
+docker pull postgres
+  #+end_src
+
+2. Create a folder to store da database data
+
+  #+begin_src shell :tangle no :hlines yes :results no
+mkdir ~/sirpa_data/
+  #+end_src
+
+3. Run postgres image
+
+  #+begin_src shell :tangle no :hlines yes :results no
+docker run -d \
+    --name sirpa-postgres \
+    --env-file .env \
+    -v ~/sirpa_data/:/var/lib/postgresql/data \
+    -p 5432:5432 \
+    postgres
+  #+end_src
+
+To enter the container commandline you run the command:
+
+#+begin_src shell :tangle no :hlines yes :results no
+docker exec -it sirpa-postgres bash
+#+end_src
+
+To connect to database run:
+#+begin_src shell :tangle no :hlines yes :results no
+psql -h localhost -U postgres
+#+end_src
+
+** pgAdmin configuration (administration for postgresql)
+
+1. Download docker pdAdmin image
+  #+begin_src shell :tangle no :hlines yes :results no
+docker pull dpage/pgadmin4
+  #+end_src
+
+2. Run pgAdmin docker image
+  #+begin_src shell :tangle no :hlines yes :results no
+docker run -d \
+    --name sirpa-pgAdmin \
+    --env-file .env \
+    -p 16543:80 \
+    dpage/pgadmin4
+  #+end_src
+
+** fastAPI
+
+1. [[https://github.com/pdm-project/pdm][Install pdm package management tool]]
+
+2. Install FastAPI (no need to do, only for documentation)
+
+   1. Install poetry
+
+      https://python-poetry.org/docs/
+
+   2. Install FastAPI with poetry
+
+     #+begin_src shell
+poetry new api
+cd api
+poetry add fastapi
+poetry add uvicorn[standard]
+     #+end_src
+
+   3. Activate poetry shell (virtual environment)
+
+     #+begin_src shell
+poetry shell
+     #+end_src
+
+   4. Run uvicorn server (inside poetry shell)
+
+     #+begin_src shell
+uvicorn main:app --reload
+     #+end_src
+
+3. Dockerfile
+
+  #+begin_src dockerfile :tangle Dockerfile-fastapi :hlines yes
+FROM python:3.8
+
+WORKDIR /api
+
+COPY /api /api
+COPY pyproject.toml /api
+
+RUN pip3 install poetry
+RUN poetry config virtualenvs.create false
+RUN poetry install
+
+CMD ["poetry", "shell"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+  #+end_src
+
+
+- Build the docker image from dockerfile for production
+  #+BEGIN_SRC shell :tangle no :hlines yes :results output
+# Build docker image from dockerfile
+# -t is to give the image a tag, a "name"
+
+docker build -t sirpa-api:0.0.1 api/
+  #+END_SRC
+
+
+- Run docker image for development
+  #+BEGIN_SRC shell :tangle no :results output
+# Run docker image
+# --rm remove the container when stop (not stay paused)
+# -it interactive terminal
+# -d run the container in the background
+# -name container name
+# -p port map
+# -v volume -> -v $(pwd):/app to map the local folder to the container folder
+
+docker run --rm -it --name sirpa-api -v $(pwd)/api/api:/api -p 8000:8000 sirpa-api:0.0.1
+  #+END_SRC

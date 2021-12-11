@@ -1,27 +1,3 @@
-#+TITLE: SIRPA
-#+author:    José Galinha
-#+email:     jbgalinha@gmail.com
-
-
-* Introdução
-
-O *Sistema Integrado de Registo de Presenças em Aula (SIRPA)* é um sistema devolvido para a disciplina de Projeto Integrado da Licenciatura em Engenharia informátia da ESTIG.
-
-O sistema tem como objectivo o registo de presença dos alunos via QRCode
-
-
-* Frontend
-
-Frontend [[file:frontend/README.org][README.org]]
-
-* Backend
-
-Backend [[file:backend/README.org][README.org]]
-
-* Docker Compose
-
-#+NAME: docker-compose.yml
-#+begin_src dockerfile :tangle docker-compose.yml :hlines yes
 version: '3'
 
 services:
@@ -80,24 +56,3 @@ volumes:
 networks:
     sirpa-network:
         driver: bridge
-#+end_src
-
-- Run cmd
-
- #+begin_src shell :tangle no :hlines yes :output no
-# -d is to run in detach mode (backgroud)
-docker-compose up -d
- #+end_src
-
- #+RESULTS:
-
-- Stop cmd
-
- #+begin_src shell :tangle no :hlines yes :output no
-# -d is to run in detach mode (backgroud)
-docker-compose down
- #+end_src
-
-* Bakcups
-
-rsync
