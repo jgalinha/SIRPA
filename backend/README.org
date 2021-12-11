@@ -70,15 +70,15 @@ docker run -d \
 
 ** fastAPI
 
-1. [[https://github.com/pdm-project/pdm][Install pdm package management tool]]
+https://medium.com/@harpalsahota/dockerizing-python-poetry-applications-1aa3acb76287
+https://vsupalov.com/docker-env-vars/
+https://dev.to/grayhat/getting-started-with-docker-fast-api-37mf
+
+1. [[https://python-poetry.org/docs/][Install poetry python package and dependency management tool]]
 
 2. Install FastAPI (no need to do, only for documentation)
 
-   1. Install poetry
-
-      https://python-poetry.org/docs/
-
-   2. Install FastAPI with poetry
+   1. Install FastAPI with poetry
 
      #+begin_src shell
 poetry new api
@@ -87,13 +87,13 @@ poetry add fastapi
 poetry add uvicorn[standard]
      #+end_src
 
-   3. Activate poetry shell (virtual environment)
+   2. Activate poetry shell (virtual environment)
 
      #+begin_src shell
 poetry shell
      #+end_src
 
-   4. Run uvicorn server (inside poetry shell)
+   3. Run uvicorn server (inside poetry shell)
 
      #+begin_src shell
 uvicorn main:app --reload
