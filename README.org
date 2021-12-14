@@ -100,4 +100,19 @@ docker-compose down
 
 * Bakcups
 
+pgbackrest
+
+https://www.enterprisedb.com/postgresql-database-backup-recovery-what-works-wal-pitr
+https://access.crunchydata.com/documentation/crunchy-postgres-containers/4.2.2/examples/backup-restoration/pgbackrest/
+https://pgbackrest.org/
+https://severalnines.com/database-blog/validating-your-postgresql-backups-docker
+https://www.reddit.com/r/PostgreSQL/comments/ms036b/backup_postgresql_docker/
+https://deck-chores.readthedocs.io/en/stable/
+
+barman
+
+https://pgbarman.org/
+https://github.com/EnterpriseDB/barman
+https://hub.docker.com/r/ubcctlt/barman
+
 rsync
