@@ -2,8 +2,8 @@ FROM python:3.8
 
 WORKDIR /api
 
-COPY /api /api
-COPY pyproject.toml /api
+COPY / /api
+COPY pyproject.toml /api/pyproject.toml
 
 RUN pip3 install poetry
 RUN poetry config virtualenvs.create false
