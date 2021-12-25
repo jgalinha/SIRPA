@@ -7,8 +7,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-load_dotenv()
+load_dotenv() # read .env variables
 
+# database url creation
 SQLALCHEMY_DATABASE_URL = "postgresql://{}:{}@{}/{}".format(
     os.getenv("POSTGRES_USER"),
     os.getenv("POSTGRES_PASSWORD"),
@@ -18,6 +19,13 @@ SQLALCHEMY_DATABASE_URL = "postgresql://{}:{}@{}/{}".format(
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
-SessionLocal = sessionmaker(autocommit=False, autoFlush=False, bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

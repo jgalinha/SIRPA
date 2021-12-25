@@ -1,17 +1,14 @@
 from typing import List, Optional
-
 from pydantic import BaseModel
 
-class UserBase(BaseModel):
+class User(BaseModel):
     nome_utilizador: str
     email: str
-    public_key: str
-    
-class UserCreate(UserBase):
     password: str
 
-class User(UserBase):
+class ShowUser(BaseModel):
     id_utilizador: int
-    
-    class Config:
-        orm_mode = True
+    nome_utilizador: str
+    email: str
+    class Config():
+        orm_mode =  True
