@@ -116,3 +116,5 @@ https://github.com/EnterpriseDB/barman
 https://hub.docker.com/r/ubcctlt/barman
 
 rsync
+
+gpg

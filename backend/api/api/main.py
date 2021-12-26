@@ -1,8 +1,6 @@
-#!/usr/bin/env python3
-
 import schemas, models
 from icecream import ic
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, status
 from sqlalchemy.orm import Session
 from database import engine, get_db
 from model import user
@@ -15,7 +13,6 @@ app = FastAPI()
 def index():
     return {"SIRPA API": "Visit docs for more information"}
 
-
-@app.post("/user", response_model=schemas.ShowUser)
+@app.post("/user", response_model=schemas.ShowUser, tags=["users"], status_code=status.HTTP_201_CREATED)
 def create_user(request: schemas.User, db: Session = Depends(get_db)):
     return user.create_user(db, request)

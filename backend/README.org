@@ -104,14 +104,16 @@ uvicorn main:app --reload
   #+begin_src dockerfile :tangle Dockerfile-fastapi :hlines yes
 FROM python:3.8
 
+RUN pip3 install "poetry==1.0.0"
+
+COPY poetry.lock pyproject.toml /api/
+RUN poetry config virtualenvs.create false
+
 WORKDIR /api
 
-COPY /api /api
-COPY pyproject.toml /api
-
-RUN pip3 install poetry
-RUN poetry config virtualenvs.create false
 RUN poetry install
+
+COPY . /api
 
 CMD ["poetry", "shell"]
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

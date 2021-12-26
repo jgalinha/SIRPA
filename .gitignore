@@ -1,2 +1,3 @@
 /backend/.env
-./backend/api/api/__pycache__/main.cpython-38.pyc
+./backend/api/api/__pycache__
+*.pyc
