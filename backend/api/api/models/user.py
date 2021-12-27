@@ -1,9 +1,8 @@
-
-import schemas
+import schemas.user_schema as user_schema
 from sqlalchemy.sql.functions import user
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
-from models import User
+from orm.user import User
 from crypt import Crypt
 from fastapi import HTTPException, status
 
@@ -17,7 +16,7 @@ def check_user_exists(db: Session, nome_utilizador: str, email: str):
         return True
     return False
 
-def create_user(db: Session, request: schemas.User):
+def create_user(db: Session, request: user_schema.User):
     if not check_user_exists(db, request.nome_utilizador, request.email):
             key_pair = Crypt.generate_key_pair(request.password)
             new_user = User(nome_utilizador = request.nome_utilizador,

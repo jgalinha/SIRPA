@@ -1,7 +1,5 @@
-from os import EX_TEMPFAIL
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.visitors import CloningVisitor
 
 from database import Base
 

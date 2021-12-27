@@ -15,10 +15,13 @@ passlib = "^1.7.4"
 bcrypt = "^3.2.0"
 cryptography = "^36.0.1"
 pydantic = "^1.8.2"
+python-jose = "^3.3.0"
+python-multipart = "^0.0.5"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
 icecream = "^2.1.1"
+requests = "^2.26.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
