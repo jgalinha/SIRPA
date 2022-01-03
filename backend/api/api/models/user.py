@@ -1,3 +1,6 @@
+from re import U
+
+from pydantic.utils import KeyType
 import schemas.user_schema as user_schema
 from sqlalchemy.sql.functions import user
 from sqlalchemy.orm import Session
@@ -5,6 +8,7 @@ from sqlalchemy import or_
 from orm.user import User
 from crypt import Crypt
 from fastapi import HTTPException, status
+from icecream import ic
 
 
 def get_user(db: Session, id_utilizador: int):
@@ -15,6 +19,17 @@ def check_user_exists(db: Session, nome_utilizador: str, email: str):
     if users:
         return True
     return False
+
+def get_user_pub_key(db: Session, id_utilizador: int, password: str):
+    pub_key = db.query(User).filter(User.id_utilizador == id_utilizador).first().public_key
+    #kr = Crypt.load_priv_key(password, pub_key)
+    ku = Crypt.load_pub_key(pub_key)
+    cipher = Crypt.encrypt(ku, b"Test message")
+    priv_key = db.query(User).filter(User.id_utilizador == id_utilizador).first().private_key
+    kr = Crypt.load_priv_key(priv_key, password)
+    plain = Crypt.decrypt(kr, cipher)
+    ic(plain)
+    return "bah"
 
 def create_user(db: Session, request: user_schema.User):
     if not check_user_exists(db, request.nome_utilizador, request.email):
@@ -30,4 +45,3 @@ def create_user(db: Session, request: user_schema.User):
             
             return new_user
     raise HTTPException(status_code=status.HTTP_302_FOUND, detail="user already exists")
-        
