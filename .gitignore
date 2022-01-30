@@ -1,3 +1,5 @@
 ./backend/api/api/__pycache__
-*.pyc
+*.py[co]
+*~
+*.swp
 backend/api/api/__pycache__/
