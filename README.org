@@ -118,3 +118,5 @@ https://hub.docker.com/r/ubcctlt/barman
 rsync
 
 gpg
+
+https://app.qr-code-generator.com/
