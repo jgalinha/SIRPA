@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { MenuIcon, UserIcon } from '@heroicons/react/outline'
 import { Link } from 'react-router-dom';
 import { Menu, Transition } from '@headlessui/react'
