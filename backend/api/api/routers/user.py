@@ -1,8 +1,6 @@
 from typing import List
-from fastapi import APIRouter, Depends, responses, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
-from orm.user import User
-import schemas
 import schemas.user_schema as user_schema
 from models import user
 from database import get_db

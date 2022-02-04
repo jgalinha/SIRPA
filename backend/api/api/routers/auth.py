@@ -19,12 +19,12 @@ def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(
     user = db.query(User).filter(User.email == request.username).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"Invalid Credentials")
+                            detail={"error": {"msg": "Dados inválidos!", "code": status.HTTP_404_NOT_FOUND}})
 
     if not Crypt.verify_password(request.password, user.password):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Invalid Credentials")
-    access_token = create_access_token(data={"sub": user.email})
+    access_token = create_access_token(data={"email": user.email, "id": user.id_utilizador, "username": user.nome_utilizador})
 
     return {"access_token": access_token, "token_type": "bearer"}
 
