@@ -1,11 +1,18 @@
+import { Route } from 'react-router-dom';
 import './App.css';
-import Login from './components/auth/Login';
+import Login from './pages/Login';
+import Student from './pages/Student';
 
 function App() {
   return (
-    <div>
-      <Login></Login>
-    </div>
+    <>
+      <Route path="/" exact>
+        <Login />
+      </Route>
+      <Route path="/student">
+        <Student />
+      </Route>
+    </>
   );
 }
 

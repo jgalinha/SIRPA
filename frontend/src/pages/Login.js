@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
-import Logo from '../../img/SIRPA_QR_Longo.svg'
-import Button from '../UI/Button/Button';
+import Logo from '../img/SIRPA_QR_Longo.svg'
+import Button from '../components/UI/Button/Button';
 
 const Login = (props) => {
 
@@ -30,7 +30,7 @@ const Login = (props) => {
             <div className="min-h-screen bg-gray-100 flex flex-col justify-center sm:py-12">
                 <div className="p-10 xs:p-0 mx-auto md:w-full md:max-w-md">
                     <div className='mb-5'>
-                        <img src={Logo}></img>
+                        <img src={Logo} alt='SIRPA logo'></img>
                     </div>  
                     <div className="bg-white shadow w-full rounded-lg divide-y divide-gray-200">
                         <div className="px-5 py-7">
