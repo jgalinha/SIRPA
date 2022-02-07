@@ -16,7 +16,7 @@ class Docentes(Base):
 
     aulas = relationship("Aulas", back_populates="docente")
     ucs = relationship("UCDocentes", back_populates="docente")
-    utilizador = relationship("Utilizadores", back_populates="docente")
+    utilizador = relationship("User", back_populates="docente")
 
     
 class NaoDocentes(Base):
@@ -29,4 +29,4 @@ class NaoDocentes(Base):
     nr_nao_docente = Column(Integer, unique=True, nullable=False)
     id_utilizador = Column(Integer, ForeignKey("utilizadores.id_utilizador"), nullable=False)
 
-    utilizador = relationship("Utilizadores", back_populates="nao_docente")
+    utilizador = relationship("User", back_populates="nao_docente")

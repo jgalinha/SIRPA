@@ -55,7 +55,6 @@ class AnoCurricular(Base):
     id_ano = Column(Integer, primary_key=True, autoincrement=True, index=True)
     ano = Column(String, unique=True, nullable=False)
 
-    ucs = relationship("UC", back_populates="anos_curriculares")
     inscricoes_cursos = relationship("InscricoesCursos", back_populates="ano_curricular")
     semestres = relationship("Semestres", back_populates="ano_curricular")
     
@@ -72,7 +71,6 @@ class Periodos(Base):
     hora_fim = Column(DateTime, nullable=False)
 
     aulas = relationship("Aulas", back_populates="periodo")
-    semestre = relationship("Semestres", back_populates="periodos")
     uc = relationship("UC", back_populates="periodos")
     
 
@@ -102,7 +100,7 @@ class SemestresUC(Base):
     id_semestre = Column(Integer, ForeignKey("semestres.id_semestre"), primary_key=True)
 
     uc = relationship("UC", back_populates="semestres")
-    semestre = relationship("Semestre", back_populates="ucs")
+    semestre = relationship("Semestres", back_populates="ucs")
 
 
 class UCDocentes(Base):
