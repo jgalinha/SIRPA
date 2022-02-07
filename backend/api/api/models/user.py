@@ -2,7 +2,7 @@ import schemas.user_schema as user_schema
 from sqlalchemy.sql.functions import user
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
-from orm.user import User
+from db.user import User
 from crypt import Crypt
 from fastapi import HTTPException, status
 from icecream import ic
