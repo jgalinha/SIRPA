@@ -70,6 +70,7 @@ class UC(Base):
 
     id_uc = Column(Integer, primary_key=True, autoincrement=True, index=True)
     id_curso = Column(Integer, ForeignKey("cursos.id_curso"))
+    nome_uc = Column(String, nullable=False)
     id_semestre = Column(Integer, ForeignKey("semestres.id_semestre"))
     id_ano = Column(Integer, ForeignKey("ano_curricular.id_ano"))
     id_turma = Column(Integer, ForeignKey("turmas.id_turma"))
