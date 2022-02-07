@@ -1,6 +1,4 @@
-from typing import List, Optional
-from pydantic import BaseModel, validator
-
+from pydantic import BaseModel
 
 class User(BaseModel):
     nome_utilizador: str

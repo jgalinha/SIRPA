@@ -1,11 +1,13 @@
-import orm
+from orm import user as User
+from orm import alunos as Alunos
 from icecream import ic
 from fastapi import FastAPI
 from database import engine
 from routers import user, auth
 from fastapi.middleware.cors import CORSMiddleware
 
-orm.user.Base.metadata.create_all(bind=engine)
+User.Base.metadata.create_all(bind=engine)
+Alunos.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 

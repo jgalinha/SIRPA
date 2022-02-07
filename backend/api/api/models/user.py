@@ -1,6 +1,3 @@
-from re import U
-
-from pydantic.utils import KeyType
 import schemas.user_schema as user_schema
 from sqlalchemy.sql.functions import user
 from sqlalchemy.orm import Session
@@ -25,6 +22,7 @@ def get_user_pub_key(db: Session, id_utilizador: int, password: str):
     #kr = Crypt.load_priv_key(password, pub_key)
     ku = Crypt.load_pub_key(pub_key)
     cipher = Crypt.encrypt(ku, b"Test message")
+    ic(cipher)
     priv_key = db.query(User).filter(User.id_utilizador == id_utilizador).first().private_key
     kr = Crypt.load_priv_key(priv_key, password)
     plain = Crypt.decrypt(kr, cipher)

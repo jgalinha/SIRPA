@@ -24,6 +24,6 @@ def login(response: Response, request: OAuth2PasswordRequestForm = Depends(), db
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Invalid Credentials") # TODO mudar mensagem de erro para novo formato
     access_token = create_access_token(data={"sub": user.email, "id": user.id_utilizador, "username": user.nome_utilizador})
-    response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True, samesite='strict', domain="http://127.0.0.1:3000")
+    response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True)
     return {"access_token": access_token, "token_type": "bearer"}
 
