@@ -1,3 +1,4 @@
+from pydoc import classname
 from database import Base
 from sqlalchemy import Column, DateTime, Integer, String, ForeignKey, Date
 
@@ -12,6 +13,15 @@ class Cursos(Base):
     nome_curso = Column(String, unique=True)
     descricao_curso = Column(String)
 
+    
+class InscricoesCursos(Base):
+    """Inscricoes Cursos SQLAlchemy model
+    """
+    __tablename__ = "inscricoes_cursos"
+
+    id_aluno = Column(Integer, ForeignKey("alunos.id_aluno"), primary_key=True)
+    id_curso = Column(Integer, ForeignKey("cursos.id_curso"), primary_key=True)
+    id_ano_curricular = Column(Integer, ForeignKey("ano_curricular.id_ano"), primary_key=True)
 
 class Semestres(Base):
     """Semestres SQLAlchemy model
