@@ -1,12 +1,21 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, Boolean
-from sqlalchemy.orm import relationship
+# -*- coding: utf-8 -*-
+"""User SQLAlchemy schema file 
+
+This module represents the SQLAlchemy schema for the user tables
+
+@Author: José Galinha
+@Email: j.b.galinha@gmail.com
+"""
 from database import Base
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
+
 
 class User(Base):
-    """User SQLAlchemy model
-    """
+    """User SQLAlchemy model"""
+
     __tablename__ = "utilizadores"
-    
+
     id_utilizador = Column(Integer, primary_key=True, index=True, autoincrement=True)
     nome_utilizador = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)

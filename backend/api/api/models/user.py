@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+"""User model file
+
+This module define the model operations for the users
+
+@Author: José Galinha
+@Email: j.b.galinha@gmail.com
+"""
 from crypt import Crypt
 from typing import List
 
@@ -9,7 +17,7 @@ from sqlalchemy.orm import Session
 from utils import Utils
 
 
-def check_user_exists(db: Session, /, *, nome_utilizador: str, email: str):
+def check_user_exists(db: Session, /, *, nome_utilizador: str, email: str) -> bool:
     """Check a given username and email exists in db
 
     Args:
@@ -20,14 +28,24 @@ def check_user_exists(db: Session, /, *, nome_utilizador: str, email: str):
     Returns:
         bool: return True if username or email exists
     """
-    user = (
-        db.query(User)
-        .filter(or_(User.nome_utilizador == nome_utilizador, User.email == email))
-        .all()
-    )
-    if user:
-        return True
-    return False
+    try:
+        user = (
+            db.query(User)
+            .filter(or_(User.nome_utilizador == nome_utilizador, User.email == email))
+            .all()
+        )
+        if user:
+            return True
+        return False
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=Utils.error_msg(
+                status.HTTP_500_INTERNAL_SERVER_ERROR,
+                "Error checking if user exists",
+                error=repr(e),
+            ),
+        )
 
 
 def get_users(
@@ -73,6 +91,7 @@ def delete_user(db: Session, /, *, id_utilizador: int):
         db.delete(user)
         db.commit()
     except HTTPException:
+        db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=Utils.error_msg(
@@ -109,7 +128,7 @@ def get_user(db: Session, /, *, id_utilizador: int):
 #     return "bah"
 
 
-def create_user(db: Session, request: user_schema.UserCreate, /):
+def create_user(db: Session, request: user_schema.UserCreate, /) -> User:
     """Create and user
 
     Args:
@@ -122,20 +141,33 @@ def create_user(db: Session, request: user_schema.UserCreate, /):
     Returns:
         User: details from inserted user
     """
-    if not check_user_exists(
-        db, nome_utilizador=request.nome_utilizador, email=request.email
-    ):
-        key_pair = Crypt.generate_key_pair(request.password)
-        new_user = User(
-            nome_utilizador=request.nome_utilizador,
-            email=request.email,
-            password=Crypt.bcrypt(request.password),
-            private_key=key_pair[1],
-            public_key=key_pair[0],
-        )
-        db.add(new_user)
-        db.commit()
-        db.refresh(new_user)
+    try:
+        if not check_user_exists(
+            db, nome_utilizador=request.nome_utilizador, email=request.email
+        ):
+            key_pair = Crypt.generate_key_pair(request.password)
+            new_user = User(
+                nome_utilizador=request.nome_utilizador,
+                email=request.email,
+                password=Crypt.bcrypt(request.password),
+                private_key=key_pair[1],
+                public_key=key_pair[0],
+            )
+            db.add(new_user)
+            db.commit()
+            db.refresh(new_user)
 
-        return new_user
-    raise HTTPException(status_code=status.HTTP_302_FOUND, detail="user already exists")
+            return new_user
+        raise HTTPException(
+            status_code=status.HTTP_302_FOUND, detail="user already exists"
+        )
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=Utils.error_msg(
+                status.HTTP_500_INTERNAL_SERVER_ERROR,
+                "Error creating user",
+                error=repr(e),
+            ),
+        )

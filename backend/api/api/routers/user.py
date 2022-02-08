@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+"""Users router file
+
+This module set the routes for the user path of the api
+
+@Author: José Galinha
+@Email: j.b.galinha@gmail.com
+"""
 from typing import List
 
 import schemas.user_schema as user_schema
@@ -10,8 +18,25 @@ from sqlalchemy.orm import Session
 router = APIRouter(tags=["Utilizadores"], prefix="/user")
 
 
+@router.post(
+    "/create", response_model=user_schema.ShowUser, status_code=status.HTTP_201_CREATED
+)
+def create_user(request: user_schema.UserCreate, db: Session = Depends(get_db)):
+    """Create user
+
+    Args:
+        request (user_schema.UserCreate): user data
+        db (Session, optional): database session. Defaults to Depends(get_db).
+
+    Returns:
+        user_schema.ShowUser: created user details
+    """
+    # TODO email validation, password validation
+    return user.create_user(db, request)
+
+
 @router.get(
-    "/",
+    "/list",
     response_model=List[user_schema.ShowUser],
     status_code=status.HTTP_200_OK,
     dependencies=[Depends(get_current_user)],
@@ -29,25 +54,8 @@ def get_users(
     Returns:
         List[user_schema.ShowUser]: list of Users
     """
-    users = user.get_users(db, skip, limit)
+    users = user.get_users(db, skip=skip, limit=limit)
     return users
-
-
-@router.post(
-    "/", response_model=user_schema.ShowUser, status_code=status.HTTP_201_CREATED
-)
-def create_user(request: user_schema.UserCreate, db: Session = Depends(get_db)):
-    """Create user
-
-    Args:
-        request (user_schema.UserCreate): user data
-        db (Session, optional): database session. Defaults to Depends(get_db).
-
-    Returns:
-        user_schema.ShowUser: created user details
-    """
-    # TODO email validation, password validation
-    return user.create_user(db, request)
 
 
 # @router.get("/{id}/{password}/pubkey", status_code=status.HTTP_200_OK, response_model=user_schema.ShowUser)
