@@ -48,6 +48,19 @@ def _check_student_exists(db: Session, /, *, nr_aluno: int) -> bool:
         )
 
 
+def get_student(db: Session, /, *, id_student: int) -> student_schema.ShowStudent:
+    """Query student by id
+
+    Args:
+        db (Session): database session
+        id_student (int): student id
+
+    Returns:
+        student_schema.ShowStudent: Student Detail
+    """
+    return db.query(Alunos).get(id_student)
+
+
 def get_students(
     db: Session, /, *, skip: int = 0, limit: int = 100
 ) -> List[student_schema.ShowStudent]:

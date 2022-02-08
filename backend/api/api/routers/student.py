@@ -43,13 +43,18 @@ def get_students(db: Session = Depends(get_db), skip: int = 0, limit: int = 100)
     return student.get_students(db, skip=skip, limit=limit)
 
 
-@router.get("{id}")
-def get_student_by_id():
-    pass
+@router.get(
+    "/{id}",
+    response_model=student_schema.ShowStudent,
+    status_code=status.HTTP_200_OK,
+    dependencies=dependencies,
+)
+def get_student_by_id(id: int, db: Session = Depends(get_db)) -> Any:
+    return student.get_student(db, id_student=id)
 
 
 @router.delete(
-    "{id}",
+    "/{id}",
     response_model=student_schema.ShowStudent,
     status_code=status.HTTP_200_OK,
     dependencies=dependencies,

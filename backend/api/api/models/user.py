@@ -103,7 +103,7 @@ def delete_user(db: Session, /, *, id_utilizador: int):
     return user
 
 
-def get_user(db: Session, /, *, id_utilizador: int):
+def get_user(db: Session, /, *, id_utilizador: int) -> user_schema.ShowUser:
     """Query user by id
 
     Args:
