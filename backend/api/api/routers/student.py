@@ -21,6 +21,16 @@ router = APIRouter(tags=["Alunos"], prefix="/student")
 dependencies = [Depends(get_current_user)]
 
 
+@router.get(
+    "/number/{number}",
+    response_model=student_schema.ShowStudent,
+    status_code=status.HTTP_200_OK,
+    dependencies=dependencies,
+)
+def get_student_by_number(number: int, db: Session = Depends(get_db)) -> Any:
+    return student.get_student_by_number(db, student_nr=number)
+
+
 @router.post(
     "/create",
     response_model=student_schema.ShowStudent,
