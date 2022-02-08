@@ -7,7 +7,7 @@ This module set the routes for the alunos path of the api
 @Email: j.b.galinha@gmail.com
 """
 
-from typing import Any
+from typing import Any, List
 
 from database import get_db
 from fastapi import APIRouter, Depends, status
@@ -33,9 +33,14 @@ def create_student(
     return student.create_student(db, request)
 
 
-@router.get("/list")
-def get_students():
-    pass
+@router.get(
+    "/list",
+    response_model=List[student_schema.ShowStudent],
+    status_code=status.HTTP_200_OK,
+    dependencies=dependencies,
+)
+def get_students(db: Session = Depends(get_db), skip: int = 0, limit: int = 100) -> Any:
+    return student.get_students(db, skip=skip, limit=limit)
 
 
 @router.get("{id}")

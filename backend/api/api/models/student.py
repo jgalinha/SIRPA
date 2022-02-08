@@ -8,6 +8,8 @@ This module define the model operations for the students
 """
 
 
+from typing import List
+
 from db.alunos import Alunos
 from fastapi import HTTPException, status
 from icecream import ic
@@ -44,6 +46,22 @@ def _check_student_exists(db: Session, /, *, nr_aluno: int) -> bool:
                 error=repr(e),
             ),
         )
+
+
+def get_students(
+    db: Session, /, *, skip: int = 0, limit: int = 100
+) -> List[student_schema.ShowStudent]:
+    """Get list of students
+
+    Args:
+        db (Session): database session
+        skip (int, optional): rows ro skip. Defaults to 0.
+        limit (int, optional): limit of rows. Defaults to 0.
+
+    Returns:
+        List[student_schema.ShowStudent]: List of students
+    """
+    return db.query(Alunos).offset(skip).limit(limit).all()
 
 
 def delete_student(db: Session, /, *, id_student: int) -> student_schema.ShowStudent:
@@ -121,7 +139,7 @@ def create_student(
         if user:
             new_student: Alunos = Alunos(
                 id_utilizador=user.id_utilizador,
-                nome=user.nome_utilizador,
+                nome=request.nome,
                 nr_aluno=request.nr_aluno,
             )
             db.add(new_student)

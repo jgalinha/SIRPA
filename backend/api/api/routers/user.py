@@ -6,7 +6,7 @@ This module set the routes for the user path of the api
 @Author: José Galinha
 @Email: j.b.galinha@gmail.com
 """
-from typing import List
+from typing import Any, List
 
 import schemas.user_schema as user_schema
 from database import get_db
@@ -26,7 +26,7 @@ dependencies = [Depends(get_current_user)]
     status_code=status.HTTP_201_CREATED,
     dependencies=dependencies,
 )
-def create_user(request: user_schema.UserCreate, db: Session = Depends(get_db)):
+def create_user(request: user_schema.UserCreate, db: Session = Depends(get_db)) -> Any:
     """Create user
 
     Args:
@@ -46,9 +46,7 @@ def create_user(request: user_schema.UserCreate, db: Session = Depends(get_db)):
     status_code=status.HTTP_200_OK,
     dependencies=dependencies,
 )
-def get_users(
-    db: Session = Depends(get_db), skip: int = 0, limit: int = 100
-) -> List[user_schema.ShowUser]:
+def get_users(db: Session = Depends(get_db), skip: int = 0, limit: int = 100) -> Any:
     """Get all users
 
     Args:
@@ -74,7 +72,7 @@ def get_users(
     response_model=user_schema.ShowUser,
     dependencies=dependencies,
 )
-def get_user(id: int, db: Session = Depends(get_db)):
+def get_user(id: int, db: Session = Depends(get_db)) -> Any:
     """Get user by id
 
     Args:
@@ -93,7 +91,7 @@ def get_user(id: int, db: Session = Depends(get_db)):
     status_code=status.HTTP_200_OK,
     dependencies=dependencies,
 )
-def delete_user(id: int, db: Session = Depends(get_db)):
+def delete_user(id: int, db: Session = Depends(get_db)) -> Any:
     """Delete an user by id
 
     Args:
