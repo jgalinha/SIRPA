@@ -17,9 +17,14 @@ from sqlalchemy.orm import Session
 
 router = APIRouter(tags=["Utilizadores"], prefix="/user")
 
+dependencies = [Depends(get_current_user)]
+
 
 @router.post(
-    "/create", response_model=user_schema.ShowUser, status_code=status.HTTP_201_CREATED
+    "/create",
+    response_model=user_schema.ShowUser,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=dependencies,
 )
 def create_user(request: user_schema.UserCreate, db: Session = Depends(get_db)):
     """Create user
@@ -39,7 +44,7 @@ def create_user(request: user_schema.UserCreate, db: Session = Depends(get_db)):
     "/list",
     response_model=List[user_schema.ShowUser],
     status_code=status.HTTP_200_OK,
-    dependencies=[Depends(get_current_user)],
+    dependencies=dependencies,
 )
 def get_users(
     db: Session = Depends(get_db), skip: int = 0, limit: int = 100
@@ -67,7 +72,7 @@ def get_users(
     "/{id}",
     status_code=status.HTTP_200_OK,
     response_model=user_schema.ShowUser,
-    dependencies=[Depends(get_current_user)],
+    dependencies=dependencies,
 )
 def get_user(id: int, db: Session = Depends(get_db)):
     """Get user by id
@@ -86,7 +91,7 @@ def get_user(id: int, db: Session = Depends(get_db)):
     "/{id}",
     response_model=user_schema.ShowUser,
     status_code=status.HTTP_200_OK,
-    dependencies=[Depends(get_current_user)],
+    dependencies=dependencies,
 )
 def delete_user(id: int, db: Session = Depends(get_db)):
     """Delete an user by id

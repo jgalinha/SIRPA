@@ -46,6 +46,46 @@ def _check_student_exists(db: Session, /, *, nr_aluno: int) -> bool:
         )
 
 
+def delete_student(db: Session, /, *, id_student: int) -> student_schema.ShowStudent:
+    """Delete student record and respective user
+
+    Args:
+        db (Session): database session
+        id_student (int): student id
+
+    Raises:
+        HTTPException: student not found
+        HTTPException: delete error
+
+    Returns:
+        student_schema.ShowStudent: deleted student details
+    """
+    student = db.query(Alunos).get(id_student)
+    if not student:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=Utils.error_msg(
+                status.HTTP_404_NOT_FOUND,
+                f"Student with id: {id_student} not found",
+            ),
+        )
+    try:
+        db.delete(student)  # delete student record
+        db.delete(student.utilizador)  # delete student user
+        db.commit()
+        return student
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=Utils.error_msg(
+                status.HTTP_409_CONFLICT,
+                f"Error deleting student: {id_student}",
+                error=repr(e),
+            ),
+        )
+
+
 def create_student(
     db: Session, request: student_schema.CreateStudent, /
 ) -> student_schema.ShowStudent:

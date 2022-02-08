@@ -90,13 +90,14 @@ def delete_user(db: Session, /, *, id_utilizador: int):
     try:
         db.delete(user)
         db.commit()
-    except HTTPException:
+    except Exception as e:
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=Utils.error_msg(
                 status.HTTP_500_INTERNAL_SERVER_ERROR,
                 f"Error deleting user: {id_utilizador}",
+                error=repr(e),
             ),
         )
     return user

@@ -25,6 +25,7 @@ dependencies = [Depends(get_current_user)]
     "/create",
     response_model=student_schema.ShowStudent,
     status_code=status.HTTP_201_CREATED,
+    dependencies=dependencies,
 )
 def create_student(
     request: student_schema.CreateStudent, db: Session = Depends(get_db)
@@ -42,6 +43,11 @@ def get_student_by_id():
     pass
 
 
-@router.delete("{id}")
-def delete_student():
-    pass
+@router.delete(
+    "{id}",
+    response_model=student_schema.ShowStudent,
+    status_code=status.HTTP_200_OK,
+    dependencies=dependencies,
+)
+def delete_student(id: int, db: Session = Depends(get_db)) -> Any:
+    return student.delete_student(db, id_student=id)
