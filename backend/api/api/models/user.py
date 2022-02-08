@@ -1,14 +1,15 @@
-from typing import List
-import schemas.user_schema as user_schema
-from sqlalchemy.orm import Session
-from sqlalchemy import or_
-from db.user import User
 from crypt import Crypt
+from typing import List
+
+import schemas.user_schema as user_schema
+from db.user import User
 from fastapi import HTTPException, status
+from sqlalchemy import or_
+from sqlalchemy.orm import Session
 from utils import Utils
 
 
-def check_user_exists(db: Session, nome_utilizador: str, email: str):
+def check_user_exists(db: Session, /, *, nome_utilizador: str, email: str):
     """Check a given username and email exists in db
 
     Args:
@@ -17,19 +18,35 @@ def check_user_exists(db: Session, nome_utilizador: str, email: str):
         email (str): email.
 
     Returns:
-        bool: return True if usarname or email exists
+        bool: return True if username or email exists
     """
-    user = db.query(User).filter(or_(User.nome_utilizador == nome_utilizador, User.email == email)).all()
+    user = (
+        db.query(User)
+        .filter(or_(User.nome_utilizador == nome_utilizador, User.email == email))
+        .all()
+    )
     if user:
         return True
     return False
 
 
-def get_users(db: Session, skip: int = 0, limit: int = 100) -> List[user_schema.ShowUser]:
+def get_users(
+    db: Session, /, *, skip: int = 0, limit: int = 100
+) -> List[user_schema.ShowUser]:
+    """Get users
+
+    Args:
+        db (Session): database session
+        skip (int, optional): rows to skip. Defaults to 0.
+        limit (int, optional): limit of rows. Defaults to 100.
+
+    Returns:
+        List[user_schema.ShowUser]: List of users
+    """
     return db.query(User).offset(skip).limit(limit).all()
 
 
-def delete_user(db: Session, id_utilizador: int):
+def delete_user(db: Session, /, *, id_utilizador: int):
     """Delete user from database
 
     Args:
@@ -46,20 +63,27 @@ def delete_user(db: Session, id_utilizador: int):
     user = db.query(User).get(id_utilizador)
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, 
-            detail=Utils.error_msg(status.HTTP_404_NOT_FOUND, 
-                                    f"utilizador com id: {id_utilizador} não encontrado"))
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=Utils.error_msg(
+                status.HTTP_404_NOT_FOUND,
+                f"utilizador com id: {id_utilizador} não encontrado",
+            ),
+        )
     try:
         db.delete(user)
         db.commit()
-    except:
+    except HTTPException:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
-            detail=Utils.error_msg(status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                   f"Error deleting user: {id_utilizador}"))
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=Utils.error_msg(
+                status.HTTP_500_INTERNAL_SERVER_ERROR,
+                f"Error deleting user: {id_utilizador}",
+            ),
+        )
     return user
 
-def get_user(db: Session, id_utilizador: int):
+
+def get_user(db: Session, /, *, id_utilizador: int):
     """Query user by id
 
     Args:
@@ -84,7 +108,8 @@ def get_user(db: Session, id_utilizador: int):
 #     ic(plain)
 #     return "bah"
 
-def create_user(db: Session, request: user_schema.UserCreate):
+
+def create_user(db: Session, request: user_schema.UserCreate, /):
     """Create and user
 
     Args:
@@ -97,16 +122,20 @@ def create_user(db: Session, request: user_schema.UserCreate):
     Returns:
         User: details from inserted user
     """
-    if not check_user_exists(db, request.nome_utilizador, request.email):
-            key_pair = Crypt.generate_key_pair(request.password)
-            new_user = User(nome_utilizador = request.nome_utilizador,
-                                email = request.email,
-                                password =  Crypt.bcrypt(request.password),
-                                private_key = key_pair[1],
-                                public_key = key_pair[0])
-            db.add(new_user)
-            db.commit()
-            db.refresh(new_user)
-            
-            return new_user
+    if not check_user_exists(
+        db, nome_utilizador=request.nome_utilizador, email=request.email
+    ):
+        key_pair = Crypt.generate_key_pair(request.password)
+        new_user = User(
+            nome_utilizador=request.nome_utilizador,
+            email=request.email,
+            password=Crypt.bcrypt(request.password),
+            private_key=key_pair[1],
+            public_key=key_pair[0],
+        )
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+
+        return new_user
     raise HTTPException(status_code=status.HTTP_302_FOUND, detail="user already exists")
