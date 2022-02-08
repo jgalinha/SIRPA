@@ -28,6 +28,12 @@ dependencies = [Depends(get_current_user)]
     dependencies=dependencies,
 )
 def get_student_by_number(number: int, db: Session = Depends(get_db)) -> Any:
+    """Get student by number
+
+    Args:
+        number (int): student number
+        db (Session, optional): database session. Defaults to Depends(get_db).
+    """
     return student.get_student_by_number(db, student_nr=number)
 
 
@@ -40,6 +46,12 @@ def get_student_by_number(number: int, db: Session = Depends(get_db)) -> Any:
 def create_student(
     request: student_schema.CreateStudent, db: Session = Depends(get_db)
 ) -> Any:
+    """Create student and respective user account
+
+    Args:
+        request (student_schema.CreateStudent): student data
+        db (Session, optional): database session. Defaults to Depends(get_db).
+    """
     return student.create_student(db, request)
 
 
@@ -50,6 +62,13 @@ def create_student(
     dependencies=dependencies,
 )
 def get_students(db: Session = Depends(get_db), skip: int = 0, limit: int = 100) -> Any:
+    """Get List of students
+
+    Args:
+        db (Session, optional): database session. Defaults to Depends(get_db).
+        skip (int, optional): rows to skip. Defaults to 0.
+        limit (int, optional): limit of rows. Defaults to 100.
+    """
     return student.get_students(db, skip=skip, limit=limit)
 
 
@@ -60,6 +79,12 @@ def get_students(db: Session = Depends(get_db), skip: int = 0, limit: int = 100)
     dependencies=dependencies,
 )
 def get_student_by_id(id: int, db: Session = Depends(get_db)) -> Any:
+    """Get student by id
+
+    Args:
+        id (int): student id
+        db (Session, optional): database session. Defaults to Depends(get_db).
+    """
     return student.get_student(db, id_student=id)
 
 
@@ -70,6 +95,12 @@ def get_student_by_id(id: int, db: Session = Depends(get_db)) -> Any:
     dependencies=dependencies,
 )
 def delete_student(id: int, db: Session = Depends(get_db)) -> Any:
+    """Delete student and user account
+
+    Args:
+        id (int): student id
+        db (Session, optional): database session. Defaults to Depends(get_db).
+    """
     return student.delete_student(db, id_student=id)
 
 
@@ -81,5 +112,12 @@ def delete_student(id: int, db: Session = Depends(get_db)) -> Any:
 )
 def update_student(
     id: int, request: student_schema.UpdateStudent, db: Session = Depends(get_db)
-):
+) -> Any:
+    """Update student name an number
+
+    Args:
+        id (int): student id
+        request (student_schema.UpdateStudent): student name and number
+        db (Session, optional): database session. Defaults to Depends(get_db).
+    """
     return student.update_student(db, student_id=id, request=request)
