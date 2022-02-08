@@ -1,35 +1,102 @@
+from typing import List
 import schemas.user_schema as user_schema
-from sqlalchemy.sql.functions import user
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from db.user import User
 from crypt import Crypt
 from fastapi import HTTPException, status
-from icecream import ic
+from utils import Utils
 
-
-def get_user(db: Session, id_utilizador: int):
-    return db.query(User).filter(User.id_utilizador == id_utilizador).first()
 
 def check_user_exists(db: Session, nome_utilizador: str, email: str):
-    users = db.query(User).filter(or_(User.nome_utilizador == nome_utilizador, User.email == email)).all()
-    if users:
+    """Check a given username and email exists in db
+
+    Args:
+        db (Session): database
+        nome_utilizador (str): username
+        email (str): email.
+
+    Returns:
+        bool: return True if usarname or email exists
+    """
+    user = db.query(User).filter(or_(User.nome_utilizador == nome_utilizador, User.email == email)).all()
+    if user:
         return True
     return False
 
-def get_user_pub_key(db: Session, id_utilizador: int, password: str):
-    pub_key = db.query(User).filter(User.id_utilizador == id_utilizador).first().public_key
-    #kr = Crypt.load_priv_key(password, pub_key)
-    ku = Crypt.load_pub_key(pub_key)
-    cipher = Crypt.encrypt(ku, b"Test message")
-    ic(cipher)
-    priv_key = db.query(User).filter(User.id_utilizador == id_utilizador).first().private_key
-    kr = Crypt.load_priv_key(priv_key, password)
-    plain = Crypt.decrypt(kr, cipher)
-    ic(plain)
-    return "bah"
 
-def create_user(db: Session, request: user_schema.User):
+def get_users(db: Session, skip: int = 0, limit: int = 100) -> List[user_schema.ShowUser]:
+    return db.query(User).offset(skip).limit(limit).all()
+
+
+def delete_user(db: Session, id_utilizador: int):
+    """Delete user from database
+
+    Args:
+        db (Session): database
+        id_utilizador (int): user id
+
+    Raises:
+        HTTPException: 404 user not found
+        HTTPException: 500 error when trying to delete user
+
+    Returns:
+        User: Deleted user details
+    """
+    user = db.query(User).get(id_utilizador)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail=Utils.error_msg(status.HTTP_404_NOT_FOUND, 
+                                    f"utilizador com id: {id_utilizador} não encontrado"))
+    try:
+        db.delete(user)
+        db.commit()
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail=Utils.error_msg(status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                   f"Error deleting user: {id_utilizador}"))
+    return user
+
+def get_user(db: Session, id_utilizador: int):
+    """Query user by id
+
+    Args:
+        db (Session): database
+        id_utilizador (int): username
+
+    Returns:
+        User: User details
+    """
+    return db.query(User).filter(User.id_utilizador == id_utilizador).first()
+
+
+# def get_user_pub_key(db: Session, id_utilizador: int, password: str):
+#     pub_key = db.query(User).filter(User.id_utilizador == id_utilizador).first().public_key
+#     #kr = Crypt.load_priv_key(password, pub_key)
+#     ku = Crypt.load_pub_key(pub_key)
+#     cipher = Crypt.encrypt(ku, b"Test message")
+#     ic(cipher)
+#     priv_key = db.query(User).filter(User.id_utilizador == id_utilizador).first().private_key
+#     kr = Crypt.load_priv_key(priv_key, password)
+#     plain = Crypt.decrypt(kr, cipher)
+#     ic(plain)
+#     return "bah"
+
+def create_user(db: Session, request: user_schema.UserCreate):
+    """Create and user
+
+    Args:
+        db (Session): database
+        request (user_schema.UserCreate): user data
+
+    Raises:
+        HTTPException: duplicated username or email
+
+    Returns:
+        User: details from inserted user
+    """
     if not check_user_exists(db, request.nome_utilizador, request.email):
             key_pair = Crypt.generate_key_pair(request.password)
             new_user = User(nome_utilizador = request.nome_utilizador,
