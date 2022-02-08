@@ -22,6 +22,11 @@ class CreateStudent(StudentBase):
         orm_mode = True
 
 
+class UpdateStudent(StudentBase):
+    class Config:
+        orm_mode = True
+
+
 class ShowStudent(StudentBase):
     id_aluno: int
     utilizador: user_schema.ShowUser

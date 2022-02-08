@@ -48,6 +48,52 @@ def _check_student_exists(db: Session, /, *, nr_aluno: int) -> bool:
         )
 
 
+def update_student(
+    db: Session, /, *, student_id: int, request: student_schema.UpdateStudent
+) -> student_schema.ShowStudent:
+    """Update student details
+
+    Args:
+        db (Session): database session
+        student_id (int): student id
+        request (student_schema.UpdateStudent): student name and number
+
+    Raises:
+        HTTPException: Student not fount
+        HTTPException: Error updating
+
+    Returns:
+        student_schema.ShowStudent: [description]
+    """
+    student = db.query(Alunos).get(student_id)
+    if not student:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=Utils.error_msg(
+                status.HTTP_404_NOT_FOUND,
+                f"Student with id: {student_id} not found",
+            ),
+        )
+    student.nome = request.nome
+    student.nr_aluno = request.nr_aluno
+    try:
+        db.query(Alunos).filter(Alunos.id_aluno == student_id).update(
+            {"nome": request.nome, "nr_aluno": request.nr_aluno}
+        )
+        db.commit()
+        return student
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=Utils.error_msg(
+                status.HTTP_409_CONFLICT,
+                msg=f"Error updating student nr: {request.nr_aluno}",
+                error=repr(e),
+            ),
+        )
+
+
 def get_student_by_number(
     db: Session, /, *, student_nr: int
 ) -> student_schema.ShowStudent:

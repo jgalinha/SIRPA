@@ -71,3 +71,15 @@ def get_student_by_id(id: int, db: Session = Depends(get_db)) -> Any:
 )
 def delete_student(id: int, db: Session = Depends(get_db)) -> Any:
     return student.delete_student(db, id_student=id)
+
+
+@router.put(
+    "/{id}",
+    response_model=student_schema.ShowStudent,
+    status_code=status.HTTP_200_OK,
+    dependencies=dependencies,
+)
+def update_student(
+    id: int, request: student_schema.UpdateStudent, db: Session = Depends(get_db)
+):
+    return student.update_student(db, student_id=id, request=request)
