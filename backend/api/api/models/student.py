@@ -12,7 +12,6 @@ from typing import List
 
 from db.alunos import Alunos
 from fastapi import HTTPException, status
-from icecream import ic
 from models import user as User
 from schemas import student_schema
 from sqlalchemy.orm import Session
@@ -106,7 +105,6 @@ def get_student_by_number(
     Returns:
         student_schema.ShowStudent: Student details
     """
-    ic(student_nr)
     return db.query(Alunos).filter(Alunos.nr_aluno == student_nr).first()
 
 
@@ -130,7 +128,7 @@ def get_students(
 
     Args:
         db (Session): database session
-        skip (int, optional): rows ro skip. Defaults to 0.
+        skip (int, optional): rows to skip. Defaults to 0.
         limit (int, optional): limit of rows. Defaults to 0.
 
     Returns:
@@ -222,7 +220,6 @@ def create_student(
             db.refresh(new_student)
             return new_student
     except Exception as e:
-        ic(user)
         User.delete_user(db, id_utilizador=user.id_utilizador)
         db.rollback()
         raise HTTPException(
