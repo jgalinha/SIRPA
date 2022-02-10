@@ -5,7 +5,7 @@ from db import ucs as UCs
 from db import user as User
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import auth, course, student, user
+from routers import auth, course, student, teacher, user
 
 User.Base.metadata.create_all(bind=engine)
 Alunos.Base.metadata.create_all(bind=engine)
@@ -13,7 +13,8 @@ Docentes.Base.metadata.create_all(bind=engine)
 UCs.Base.metadata.create_all(bind=engine)
 
 
-app = FastAPI()
+app = FastAPI(title="SIRPA API")
+
 
 origins = ["http://localhost:3000", "http://127.0.0.1:3000"]
 
@@ -29,6 +30,7 @@ app.include_router(auth.router)
 app.include_router(user.router)
 app.include_router(student.router)
 app.include_router(course.router)
+app.include_router(teacher.router)
 
 
 @app.get("/")
