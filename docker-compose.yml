@@ -1,60 +1,60 @@
-version: '3'
+version: "3"
 
 services:
-    web:
-        container_name: sirpa-app
-        # image: sirpa:0.0.1-dev
-        build:
-            context: './frontend/'
-        ports:
-            - "3000:3000"
-        volumes:
-            - './frontend/:/app'
-        networks:
-          - sirpa-network
-        command: npm start
-    api:
-        container_name: sirpa-api
-        # image: sirpa-api:0.0.1
-        build:
-            context: './backend/api'
-            dockerfile: '../Dockerfile-fastapi'
-        env_file:
-            - backend/.env
-        ports:
-            - "8000:8000"
-        volumes:
-            - './backend/api/api:/api'
-        networks:
-            - sirpa-network
-    postgres:
-        container_name: sirpa-postgres
-        image: postgres
-        env_file:
-            - backend/.env
-        ports:
-            - "5432:5432"
-        volumes:
-            - ~/sirpa_data/:/var/lib/postgresql/data
-        networks:
-            - sirpa-network
-    pgadmin:
-        container_name: sirpa-pgadmin
-        image: dpage/pgadmin4
-        ports:
-            - "16543:80"
-        volumes:
-            - pgadmin-data:/var/lib/pgadmin
-        env_file:
-            - backend/.env
-        depends_on:
-            - postgres
-        networks:
-            - sirpa-network
+  web:
+    container_name: sirpa-app
+    # image: sirpa:0.0.1-dev
+    build:
+      context: "./frontend/"
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./frontend/:/app"
+    networks:
+      - sirpa-network
+    command: npm start
+  api:
+    container_name: sirpa-api
+    # image: sirpa-api:0.0.1
+    build:
+      context: "./backend/api"
+      dockerfile: "../Dockerfile-fastapi"
+    env_file:
+      - backend/.env
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./backend/api/api:/api"
+    networks:
+      - sirpa-network
+  postgres:
+    container_name: sirpa-postgres
+    image: postgres
+    env_file:
+      - backend/.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - ~/sirpa_data/:/var/lib/postgresql/data
+    networks:
+      - sirpa-network
+  pgadmin:
+    container_name: sirpa-pgadmin
+    image: dpage/pgadmin4
+    ports:
+      - "16543:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    env_file:
+      - backend/.env
+    depends_on:
+      - postgres
+    networks:
+      - sirpa-network
 
 volumes:
-    pgadmin-data:
+  pgadmin-data:
 
 networks:
-    sirpa-network:
-        driver: bridge
+  sirpa-network:
+    driver: bridge
