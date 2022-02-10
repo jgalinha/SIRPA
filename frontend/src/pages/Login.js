@@ -1,4 +1,5 @@
 import React, { useState, useRef, useContext } from "react";
+import { useHistory } from "react-router-dom";
 import Logo from "../img/SIRPA_QR_Longo.svg";
 import Button from "../components/UI/Button/Button";
 import jwt_decode from "jwt-decode";
@@ -14,6 +15,8 @@ const Login = (props) => {
   const { REACT_APP_API_URL } = process.env;
 
   const authCtx = useContext(AuthContext);
+
+  const history = useHistory();
 
   const emailChangeHandler = (e) => {
     setEmail(e.target.value);
@@ -54,6 +57,7 @@ const Login = (props) => {
             exp: tokenData.exp,
             nbf: tokenData.nbf,
           });
+          history.replace("/");
         });
       } else {
         return res.json().then((data) => {
