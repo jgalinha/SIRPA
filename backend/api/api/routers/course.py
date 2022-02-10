@@ -52,7 +52,7 @@ def create_course(
 
 @router.get(
     "/{id}",
-    response_model=courses_schema.ShowCourse,
+    response_model=courses_schema.ShowCourseWithUcs,
     status_code=status.HTTP_200_OK,
     dependencies=dependencies,
 )

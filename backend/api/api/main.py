@@ -5,7 +5,7 @@ from db import ucs as UCs
 from db import user as User
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import auth, course, student, teacher, user
+from routers import auth, course, student, teacher, uc, user
 
 User.Base.metadata.create_all(bind=engine)
 Alunos.Base.metadata.create_all(bind=engine)
@@ -31,6 +31,7 @@ app.include_router(user.router)
 app.include_router(student.router)
 app.include_router(course.router)
 app.include_router(teacher.router)
+app.include_router(uc.router)
 
 
 @app.get("/")

@@ -6,6 +6,8 @@ This module define the pydantic schema of courses data
 @Author: José Galinha
 @Email: j.b.galinha@gmail.com
 """
+from typing import List
+
 from pydantic import BaseModel
 
 
@@ -28,3 +30,12 @@ class ShowCourse(CourseBase):
 class UpdateCourse(CourseBase):
     class Config:
         orm_mode = True
+
+
+# avoid circular import
+# trunk-ignore(flake8/E402)
+from schemas import uc_schema
+
+
+class ShowCourseWithUcs(ShowCourse):
+    ucs: List[uc_schema.UCBase]

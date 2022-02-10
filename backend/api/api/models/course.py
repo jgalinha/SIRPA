@@ -16,6 +16,35 @@ from sqlalchemy.orm import Session
 from utils import Utils
 
 
+def _check_course_exists_by_id(db: Session, /, *, id_course: int) -> bool:
+    """Check if a course already exists in database by id
+
+    Args:
+        db (Session): database session
+        id_course (int): course id
+
+    Raises:
+        HTTPException: server error
+
+    Returns:
+        bool: course exists
+    """
+    try:
+        course = db.query(Cursos).get(id_course)
+        if course:
+            return True
+        return False
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=Utils.error_msg(
+                status.HTTP_500_INTERNAL_SERVER_ERROR,
+                "Error checking if courses exists",
+                error=repr(e),
+            ),
+        )
+
+
 def _check_course_exists(db: Session, /, *, name: str) -> bool:
     """Check if a course already exists in database
 
@@ -100,7 +129,9 @@ def create_course(
         )
 
 
-def get_course_by_id(db: Session, /, *, course_id: int) -> courses_schema.ShowCourse:
+def get_course_by_id(
+    db: Session, /, *, course_id: int
+) -> courses_schema.ShowCourseWithUcs:
     """Get course by id
 
     Args:

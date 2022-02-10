@@ -29,7 +29,12 @@ class UpdateTeacher(TeacherBase):
 
 class ShowTeacher(TeacherBase):
     id_docente: int
+
     utilizador: user_schema.ShowUser
 
     class Config:
         orm_mode = True
+
+
+class Teacher(TeacherBase):
+    id_docente: int
