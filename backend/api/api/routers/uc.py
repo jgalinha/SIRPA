@@ -18,7 +18,7 @@ from sqlalchemy.orm import Session
 
 router = APIRouter(tags=["UC"], prefix="/uc")
 
-dependencies = []
+dependencies = [Depends(get_current_user)]
 
 
 @router.get(
