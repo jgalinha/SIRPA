@@ -36,12 +36,16 @@ const user_login = async (body, setIsLoading, authCtx) => {
         username: tokenData.username,
         exp: tokenData.exp,
         nbf: tokenData.nbf,
+        isTeacher: tokenData.isTeacher,
+        isStudent: tokenData.isStudent,
+        isSuper: tokenData.isSuper,
       });
       return true;
     } else {
       throw Error;
     }
   } catch (error) {
+    setIsLoading(false);
     console.log("Authentication failed" + error);
     alert("Authentication failed!");
   }

@@ -11,6 +11,9 @@ const AuthContext = React.createContext({
     username: "",
     exp: "",
     nbf: "",
+    isTeacher: false,
+    isStudent: false,
+    isSuper: false,
   },
   login: (token, userData) => {},
   logout: () => {},
@@ -40,6 +43,9 @@ const getStoredData = () => {
           exp: "",
           email: "",
           nbf: "",
+          isTeacher: false,
+          isStudent: false,
+          isSuper: false,
         },
       };
     }
@@ -52,6 +58,9 @@ const getStoredData = () => {
         exp: "",
         email: "",
         nbf: "",
+        isTeacher: false,
+        isStudent: false,
+        isSuper: false,
       },
     };
   }
