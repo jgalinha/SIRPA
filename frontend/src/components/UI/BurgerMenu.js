@@ -1,6 +1,6 @@
 import React from "react";
 import { Menu, Transition } from "@headlessui/react";
-import { MenuIcon, UserIcon } from "@heroicons/react/outline";
+import { MenuIcon, CalendarIcon } from "@heroicons/react/outline";
 import { Link } from "react-router-dom";
 
 const BurgerMenu = () => {
@@ -10,7 +10,7 @@ const BurgerMenu = () => {
         {({ open }) => (
           <>
             <Menu.Button>
-              <MenuIcon className="flex appearance-none p-1 md:hidden w-10 h-10" />
+              <MenuIcon className="flex appearance-none mt-1 md:hidden w-12 h-12" />
             </Menu.Button>
             <Transition
               show={open}
@@ -22,19 +22,22 @@ const BurgerMenu = () => {
               leaveTo="opacity-0 scale-95"
             >
               <Menu.Items
-                className="origin-top-left absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none"
+                className="origin-top-right absolute right-0 mt-2 w-72 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none"
                 static
               >
                 <Menu.Item>
                   {({ active }) => (
                     <Link
-                      to="/student"
+                      to="/today"
                       className={`flex items-center px-4 py-2 text-lg ${
-                        active && "bg-red-700 text-white"
+                        active && "bg-red-700 rounded-md text-white"
                       }`}
                     >
-                      <UserIcon className="mr-3 h-5 w-5" aria-hidden="true" />
-                      Perfil
+                      <CalendarIcon
+                        className="mr-3 h-5 w-5"
+                        aria-hidden="true"
+                      />
+                      Hoje!
                     </Link>
                   )}
                 </Menu.Item>

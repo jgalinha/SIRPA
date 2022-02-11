@@ -4,7 +4,7 @@ import "./App.css";
 import Header from "./components/Header";
 import Navigation from "./components/UI/Navigation";
 import Login from "./pages/Login";
-import Student from "./pages/Student";
+import Today from "./pages/Today";
 import AuthContext from "./store/auth-context";
 
 function App() {
@@ -16,8 +16,11 @@ function App() {
         <>
           <Header />
           <Navigation />
-          <Route path="/">
-            <Student />
+          <Route path="/" exact>
+            <Today />
+          </Route>
+          <Route path="/today" exact>
+            <Today />
           </Route>
         </>
       )}
@@ -27,7 +30,7 @@ function App() {
         </Route>
       )}
       <Route path="*">
-        <Redirect to="/login" />
+        <Redirect to="/login" exact />
       </Route>
     </Switch>
   );
