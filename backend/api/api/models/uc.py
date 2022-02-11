@@ -8,18 +8,20 @@ This module define the model operations for the UCs
 """
 
 
+from operator import and_
 from typing import List
 
-from db.ucs import UC
+from db.ucs import UC, InscricoesUC
 from fastapi import HTTPException, status
 from models import course as Course
-from schemas import uc_schema
+from models.student import check_student_by_id
+from schemas import nm_schema, uc_schema
 from sqlalchemy.orm import Session
 from utils import Utils
 
 
 def _check_uc_exists(db: Session, /, *, name_uc: str) -> bool:
-    """Check if a uc nr already exists in database
+    """Check if a uc name already exists in database
 
     Args:
         db (Session): database session
@@ -33,6 +35,35 @@ def _check_uc_exists(db: Session, /, *, name_uc: str) -> bool:
     """
     try:
         uc = db.query(UC).filter(UC.nome_uc == name_uc).all()
+        if uc:
+            return True
+        return False
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=Utils.error_msg(
+                status.HTTP_500_INTERNAL_SERVER_ERROR,
+                "Error checking if uc exists",
+                error=repr(e),
+            ),
+        )
+
+
+def _check_uc_exists_by_id(db: Session, /, *, uc_id: int) -> bool:
+    """Check if a uc id exists in database
+
+    Args:
+        db (Session): database session
+        uc_id (int): uc id
+
+    Raises:
+        HTTPException: server error
+
+    Returns:
+        bool: uc exists
+    """
+    try:
+        uc = db.query(UC).get(uc_id)
         if uc:
             return True
         return False
@@ -215,6 +246,110 @@ def create_uc(db: Session, request: uc_schema.CreateUC, /) -> uc_schema.ShowUC:
             detail=Utils.error_msg(
                 status.HTTP_409_CONFLICT,
                 "Error creating uc",
+                error=repr(e),
+            ),
+        )
+
+
+def subscribe_uc(
+    db: Session, request: nm_schema.UCSubscriptionBase, /
+) -> nm_schema.UCSubscriptionBase:
+    """Subscribe a student with and UC
+
+    Args:
+        db (Session): database session
+        request (nm_schema.UCSubscriptionBase): UCSubscrition schema
+
+    Raises:
+        HTTPException: UC not found
+        HTTPException: Student not found
+        HTTPException: Error subscribing
+
+    Returns:
+        bool: subscrition successful
+    """
+    id_student = request.id_aluno
+    id_uc = request.id_uc
+
+    if not _check_uc_exists_by_id(db, uc_id=id_uc):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=Utils.error_msg(
+                status.HTTP_404_NOT_FOUND, f"UC with id: {id_uc} not found!"
+            ),
+        )
+
+    if not check_student_by_id(db, student_id=id_student):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=Utils.error_msg(
+                status.HTTP_404_NOT_FOUND, f"Student with id: {id_student} not found!"
+            ),
+        )
+
+    try:
+        new_uc_subscription: InscricoesUC = InscricoesUC(
+            id_aluno=id_student, id_uc=id_uc, data_inscricao=request.data_incricao
+        )
+        db.add(new_uc_subscription)
+        db.commit()
+        db.refresh(new_uc_subscription)
+        return new_uc_subscription
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=Utils.error_msg(
+                status.HTTP_409_CONFLICT,
+                "Error subscribing UC",
+                error=repr(e),
+            ),
+        )
+
+
+def unsubscribeUC(
+    db: Session, request: nm_schema.UCunSubscriptionBase, /
+) -> nm_schema.UCunSubscriptionBase:
+    """Unsubscribe UC
+
+    Args:
+        db (Session): database session
+        request (nm_schema.UCunSubscriptionBase): unsubscription schema
+
+    Raises:
+        HTTPException: Subscription not found
+        HTTPException: Error unsubscribing
+
+    Returns:
+        nm_schema.UCunSubscriptionBase: subscription
+    """
+    student_id = request.id_aluno
+    uc_id = request.id_uc
+
+    subscrition = (
+        db.query(InscricoesUC)
+        .filter(and_(InscricoesUC.id_aluno == student_id, InscricoesUC.id_uc == uc_id))
+        .first()
+    )
+    if not subscrition:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=Utils.error_msg(
+                status.HTTP_404_NOT_FOUND,
+                "Subscription not found",
+            ),
+        )
+    try:
+        db.delete(subscrition)
+        db.commit()
+        return subscrition
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=Utils.error_msg(
+                status.HTTP_409_CONFLICT,
+                "Error unsubscribing",
                 error=repr(e),
             ),
         )

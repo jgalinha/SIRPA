@@ -76,6 +76,35 @@ def check_student_by_user_id(db: Session, /, *, user_id: int) -> bool:
         )
 
 
+def check_student_by_id(db: Session, /, *, student_id: int) -> bool:
+    """Check if student exists by id
+
+    Args:
+        db (Session): database session
+        student_id (int): student id
+
+    Raises:
+        HTTPException: error checking student
+
+    Returns:
+        bool: is student
+    """
+    try:
+        student = db.query(Alunos).get(student_id)
+        if student:
+            return True
+        return False
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=Utils.error_msg(
+                status.HTTP_409_CONFLICT,
+                "Error checking student",
+                error=repr(e),
+            ),
+        )
+
+
 def update_student(
     db: Session, /, *, student_id: int, request: student_schema.UpdateStudent
 ) -> student_schema.ShowStudent:

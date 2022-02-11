@@ -7,7 +7,6 @@ This module define the pydantic schema of n-m relationships data
 @Email: j.b.galinha@gmail.com
 """
 from datetime import date
-from tkinter.tix import Tree
 
 from pydantic import BaseModel
 
@@ -31,7 +30,15 @@ class TeacherUCBase(BaseModel):
 class UCSubscriptionBase(BaseModel):
     id_aluno: int
     id_uc: int
-    data_incricao: date
+    data_inscricao: date
+
+    class Config:
+        orm_mode = True
+
+
+class UCunSubscriptionBase(BaseModel):
+    id_aluno: int
+    id_uc: int
 
     class Config:
         orm_mode = True

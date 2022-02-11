@@ -6,8 +6,10 @@ This module define the pydantic schema of ucs data
 @Author: José Galinha
 @Email: j.b.galinha@gmail.com
 """
+from typing import List
+
 from pydantic import BaseModel
-from schemas import courses_schema
+from schemas import courses_schema, nm_schema
 
 
 class UCBase(BaseModel):
@@ -29,6 +31,7 @@ class ShowUC(UCBase):
     id_uc: int
 
     curso: courses_schema.ShowCourse
+    inscricoes: List[nm_schema.UCSubscriptionBase]
 
     class Config:
         orm_mode = True

@@ -13,7 +13,7 @@ from database import get_db
 from fastapi import APIRouter, Depends, status
 from models import uc
 from oauth2 import get_current_user
-from schemas import uc_schema
+from schemas import nm_schema, uc_schema
 from sqlalchemy.orm import Session
 
 router = APIRouter(tags=["UC"], prefix="/uc")
@@ -119,3 +119,37 @@ def update_uc(
         db (Session, optional): database session. Defaults to Depends(get_db).
     """
     return uc.update_uc(db, uc_id=id, request=request)
+
+
+@router.post(
+    "/subscription/",
+    response_model=nm_schema.UCSubscriptionBase,
+    status_code=status.HTTP_200_OK,
+)
+def subscribe_uc(
+    request: nm_schema.UCSubscriptionBase, db: Session = Depends(get_db)
+) -> Any:
+    """Subscribe an UNC
+
+    Args:
+        request (nm_schema.UCSubscriptionBase): subscription data
+        db (Session, optional): database session. Defaults to Depends(get_db).
+    """
+    return uc.subscribe_uc(db, request)
+
+
+@router.delete(
+    "/subscription",
+    response_model=nm_schema.UCunSubscriptionBase,
+    status_code=status.HTTP_200_OK,
+)
+def unsubscribe_uc(
+    request: nm_schema.UCunSubscriptionBase, db: Session = Depends(get_db)
+) -> Any:
+    """Unsubscribe UC
+
+    Args:
+        request (nm_schema.UCunSubscriptionBase): subscription data
+        db (Session, optional): database session. Defaults to Depends(get_db).
+    """
+    return uc.unsubscribeUC(db, request)
