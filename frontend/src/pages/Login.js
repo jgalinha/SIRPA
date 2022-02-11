@@ -5,6 +5,17 @@ import Button from "../components/UI/Button/Button";
 import jwt_decode from "jwt-decode";
 import AuthContext from "../store/auth-context";
 
+const objToBodyObj = (obj) => {
+  var str = "";
+  for (var key in obj) {
+    if (str !== "") {
+      str += "&";
+    }
+    str += key + "=" + encodeURIComponent(obj[key]);
+  }
+  return str;
+};
+
 const Login = (props) => {
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
@@ -12,6 +23,7 @@ const Login = (props) => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // FIXME: ver maneira de meter o ip a dar no tlm sempre
   const { REACT_APP_API_URL } = process.env;
 
   const authCtx = useContext(AuthContext);
@@ -28,18 +40,18 @@ const Login = (props) => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    //setIsLoading(true)
+    setIsLoading(true);
     // TODO Validation
     const enteredEmail = emailInputRef.current.value;
     const enteredPassword = passwordInputRef.current.value;
-
+    const body = {
+      username: enteredEmail,
+      password: enteredPassword,
+      grant_type: "password",
+    };
     fetch(`${REACT_APP_API_URL}/auth/login`, {
       method: "POST",
-      body: new URLSearchParams({
-        username: enteredEmail,
-        password: enteredPassword,
-        grant_type: "password",
-      }),
+      body: objToBodyObj(body),
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
         Accept: "Set-Cookie",

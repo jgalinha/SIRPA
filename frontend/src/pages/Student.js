@@ -1,14 +1,15 @@
-import React from 'react';
-import Nav from '../components/Nav';
+import React from "react";
+import Header from "../components/Header";
+import Navigation from "../components/UI/Navigation";
 
 const Student = () => {
   return (
-  <>
-    <Nav />
-    <div>
-      Student
-    </div>
-  </>)
+    <>
+      <Header />
+      <Navigation />
+      <div>Student</div>
+    </>
+  );
 };
 
 export default Student;

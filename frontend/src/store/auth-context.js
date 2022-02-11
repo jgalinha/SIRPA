@@ -5,7 +5,13 @@ let logoutTimer;
 const AuthContext = React.createContext({
   token: "",
   isLoggedIn: false,
-  userData: "",
+  userData: {
+    email: "",
+    id: "",
+    username: "",
+    exp: "",
+    nbf: "",
+  },
   login: (token, userData) => {},
   logout: () => {},
 });
@@ -28,13 +34,25 @@ const getStoredData = () => {
       localStorage.removeItem("userData");
       return {
         token: null,
-        userData: null,
+        userData: {
+          username: "",
+          id: "",
+          exp: "",
+          email: "",
+          nbf: "",
+        },
       };
     }
   } else {
     return {
       token: null,
-      userData: null,
+      userData: {
+        username: "",
+        id: "",
+        exp: "",
+        email: "",
+        nbf: "",
+      },
     };
   }
 
