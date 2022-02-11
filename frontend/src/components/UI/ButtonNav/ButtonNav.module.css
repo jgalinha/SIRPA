@@ -1,6 +1,11 @@
 @tailwind components;
 @layer components {
   .btn-nav {
-    @apply px-4 py-2 rounded transition hover:bg-gray-100;
+    /* @apply px-4 py-2 rounded bg-gray-400 transition hover:text-white hover:bg-gray-600; */
+    @apply px-4 py-2 border-b-4 border-gray-400 transition-transform hover:border-gray-600 hover:bg-gray-600 hover:text-white;
+  }
+
+  .active {
+    @apply border-gray-600 bg-gray-600 text-white;
   }
 }

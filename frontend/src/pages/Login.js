@@ -2,19 +2,8 @@ import React, { useState, useRef, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import Logo from "../img/SIRPA_QR_Longo.svg";
 import Button from "../components/UI/Button/Button";
-import jwt_decode from "jwt-decode";
 import AuthContext from "../store/auth-context";
-
-const objToBodyObj = (obj) => {
-  var str = "";
-  for (var key in obj) {
-    if (str !== "") {
-      str += "&";
-    }
-    str += key + "=" + encodeURIComponent(obj[key]);
-  }
-  return str;
-};
+import userService from "../_services/userService";
 
 const Login = (props) => {
   const emailInputRef = useRef();
@@ -22,9 +11,6 @@ const Login = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
-  // FIXME: ver maneira de meter o ip a dar no tlm sempre
-  const { REACT_APP_API_URL } = process.env;
 
   const authCtx = useContext(AuthContext);
 
@@ -38,7 +24,7 @@ const Login = (props) => {
     setPassword(e.target.value);
   };
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     // TODO Validation
@@ -49,45 +35,10 @@ const Login = (props) => {
       password: enteredPassword,
       grant_type: "password",
     };
-    fetch(`${REACT_APP_API_URL}/auth/login`, {
-      method: "POST",
-      body: objToBodyObj(body),
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Accept: "Set-Cookie",
-      },
-      mode: "cors",
-    }).then((res) => {
-      setIsLoading(false);
-      if (res.ok) {
-        return res.json().then((data) => {
-          const tokenData = jwt_decode(data.access_token);
-          authCtx.login(data.access_token, {
-            email: tokenData.sub,
-            id: tokenData.id,
-            username: tokenData.username,
-            exp: tokenData.exp,
-            nbf: tokenData.nbf,
-          });
-          history.replace("/");
-        });
-      } else {
-        return res.json().then((data) => {
-          console.log("Authentication failed" + data);
-          alert("Authentication failed!");
-        });
-      }
-    });
-
-    /*     fetch("http://127.0.0.1:8000/user/1", {
-      headers: {
-        Authorization: "Bearer " + token,
-        Accept: "application/json",
-      },
-      mode: "cors",
-    }).then((res) => {
-      console.log(res.json());
-    }); */
+    const login = await userService.user_login(body, setIsLoading, authCtx);
+    if (login) {
+      history.replace("/");
+    }
   };
 
   return (

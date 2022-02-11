@@ -1,17 +1,19 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import styles from "./ButtonNav.module.css";
 
 const ButtonNav = (props) => {
   return (
-    <Link
+    <NavLink
       to={props.to}
-      className={styles["btn-nav"] + " " + props.className}
+      className={props.className || styles["btn-nav"]}
       onClick={props.onClick}
       disable={props.disabled}
+      activeClassName={props.activeClassName}
+      exact={props.exact || true}
     >
       {props.children}
-    </Link>
+    </NavLink>
   );
 };
 
