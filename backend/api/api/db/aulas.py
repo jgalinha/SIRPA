@@ -1,10 +1,11 @@
 from database import Base
-from sqlalchemy import Column, Date, String, Integer, ForeignKey, DateTime
+from sqlalchemy import Column, Date, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
+
 class Aulas(Base):
-    """Aulas SQLAlchemy model
-    """
+    """Aulas SQLAlchemy model"""
+
     __tablename__ = "aulas"
 
     id_aula = Column(Integer, primary_key=True, autoincrement=True, index=True)
@@ -14,7 +15,7 @@ class Aulas(Base):
     data = Column(Date, nullable=False)
     resumo = Column(String)
     sumario = Column(String)
-    sala = Column(Integer, nullable=False)
+    sala = Column(String, nullable=False)
 
     presencas = relationship("Presencas", back_populates="aula")
     docente = relationship("Docentes", back_populates="aulas")
@@ -31,4 +32,3 @@ class Presencas(Base):
 
     aula = relationship("Aulas", back_populates="presencas")
     aluno = relationship("Alunos", back_populates="presencas")
-

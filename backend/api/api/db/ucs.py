@@ -70,7 +70,7 @@ class Periodos(Base):
 
     id_periodo = Column(Integer, primary_key=True, autoincrement=True, index=True)
     id_uc = Column(Integer, ForeignKey("uc.id_uc"), nullable=False)
-    dia_semana = Column(String, nullable=False)
+    dia_semana = Column(Integer, nullable=False)
     hora_inicio = Column(DateTime, nullable=False)
     hora_fim = Column(DateTime, nullable=False)
 
