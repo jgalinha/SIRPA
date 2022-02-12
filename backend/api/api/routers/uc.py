@@ -8,7 +8,6 @@ This module set the routes for the ucs path of the api
 """
 
 from typing import Any, List
-from urllib import request
 
 from database import get_db
 from fastapi import APIRouter, Depends, status
@@ -162,6 +161,7 @@ def unsubscribe_uc(
     "/register/teacher/",
     response_model=nm_schema.TeacherUCBase,
     status_code=status.HTTP_200_OK,
+    dependencies=dependencies,
 )
 def add_teacher(
     resquest: nm_schema.TeacherUCBase, db: Session = Depends(get_db)
@@ -179,6 +179,7 @@ def add_teacher(
     "/register/teacher/",
     response_model=nm_schema.TeacherUCBase,
     status_code=status.HTTP_200_OK,
+    dependencies=dependencies,
 )
 def remove_teacher(
     request: nm_schema.TeacherUCBase, db: Session = Depends(get_db)

@@ -8,7 +8,6 @@ This module define the model operations for the UCs
 """
 
 
-from operator import and_
 from typing import List
 
 from db.ucs import UC, InscricoesUC, UCDocentes
@@ -17,6 +16,7 @@ from models.course import check_course_exists_by_id
 from models.student import check_student_by_id
 from models.teacher import check_teacher_by_id
 from schemas import nm_schema, uc_schema
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 from utils import Utils
 
@@ -38,7 +38,10 @@ def check_uc_exists(db: Session, /, *, name_uc: str) -> bool:
         uc = db.query(UC).filter(UC.nome_uc == name_uc).all()
         if uc:
             return True
-        return False
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=Utils.error_msg(status.HTTP_404_NOT_FOUND, "UC not found!"),
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -67,7 +70,10 @@ def check_uc_exists_by_id(db: Session, /, *, uc_id: int) -> bool:
         uc = db.query(UC).get(uc_id)
         if uc:
             return True
-        return False
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=Utils.error_msg(status.HTTP_404_NOT_FOUND, "UC not found!"),
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
