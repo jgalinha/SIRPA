@@ -10,9 +10,10 @@ This module define the model operations for the UCs
 
 from typing import List
 
-from db.ucs import UC, InscricoesUC, UCDocentes
+from db.ucs import UC, InscricoesUC, SemestresUC, UCDocentes
 from fastapi import HTTPException, status
 from models.course import check_course_exists_by_id
+from models.helpers import semester_exists_by_id
 from models.student import check_student_by_id
 from models.teacher import check_teacher_by_id
 from schemas import nm_schema, uc_schema
@@ -426,6 +427,111 @@ def remove_teacher(
             detail=Utils.error_msg(
                 status.HTTP_409_CONFLICT,
                 "Error removing teacher from UC",
+                error=repr(e),
+            ),
+        )
+
+
+def register_semester(
+    db: Session, request: nm_schema.SemesterUCBase, /
+) -> nm_schema.SemesterUCBase:
+    """Register semester in UC
+
+    Args:
+        db (Session): database session
+        request (nm_schema.SemesterUCBase): association data
+
+    Raises:
+        HTTPException: UC not found
+        HTTPException: Semester not found
+        HTTPException: Error association semester with UC
+
+    Returns:
+        nm_schema.SemesterUCBase: inserted data
+    """
+    uc_id = request.id_uc
+    semester_id = request.id_semestre
+
+    if not check_uc_exists_by_id(db, uc_id=uc_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=Utils.error_msg(
+                status.HTTP_404_NOT_FOUND,
+                f"UC with id: {uc_id} not found!",
+            ),
+        )
+
+    if not semester_exists_by_id(db, semester_id=semester_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=Utils.error_msg(
+                status.HTTP_404_NOT_FOUND,
+                f"Semester with id: {semester_id} not found!",
+            ),
+        )
+
+    new_association: SemestresUC = SemestresUC(id_uc=uc_id, id_semestre=semester_id)
+    try:
+        db.add(new_association)
+        db.commit()
+        db.refresh(new_association)
+        return new_association
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=Utils.error_msg(
+                status.HTTP_409_CONFLICT,
+                "Error associating Semester with UC",
+                error=repr(e),
+            ),
+        )
+
+
+def remove_semester(
+    db: Session, request: nm_schema.SemesterUCBase
+) -> nm_schema.SemesterUCBase:
+    """De-associate a semester from UC
+
+    Args:
+        db (Session): database session
+        request (nm_schema.SemesterUCBase): association data
+
+    Raises:
+        HTTPException: Association not found
+        HTTPException: Error de-associating
+
+    Returns:
+        nm_schema.SemesterUCBase: removed data
+    """
+    uc_id = request.id_uc
+    semester_id = request.id_semestre
+    association = (
+        db.query(SemestresUC)
+        .filter(
+            and_(SemestresUC.id_semestre == semester_id, SemestresUC.id_uc == uc_id)
+        )
+        .first()
+    )
+    if not association:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=Utils.error_msg(
+                status.HTTP_404_NOT_FOUND,
+                "Registry not found",
+            ),
+        )
+    try:
+        db.delete(association)
+        db.commit()
+        return association
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=Utils.error_msg(
+                status.HTTP_409_CONFLICT,
+                "Error removing semester from UC",
                 error=repr(e),
             ),
         )

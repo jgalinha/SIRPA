@@ -29,4 +29,4 @@ class UpdateSemester(SemesterBase):
 
 
 class ShowSemester(SemesterBase):
-    id_semestre: id
+    id_semestre: int

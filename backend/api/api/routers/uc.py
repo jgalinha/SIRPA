@@ -53,74 +53,6 @@ def create_uc(request: uc_schema.CreateUC, db: Session = Depends(get_db)) -> Any
     return uc.create_uc(db, request)
 
 
-@router.get(
-    "/list",
-    response_model=List[uc_schema.ShowUC],
-    status_code=status.HTTP_200_OK,
-    dependencies=dependencies,
-)
-def get_ucs(db: Session = Depends(get_db), skip: int = 0, limit: int = 100) -> Any:
-    """Get List of ucs
-
-    Args:
-        db (Session, optional): database session. Defaults to Depends(get_db).
-        skip (int, optional): rows to skip. Defaults to 0.
-        limit (int, optional): limit of rows. Defaults to 100.
-    """
-    return uc.get_ucs(db, skip=skip, limit=limit)
-
-
-@router.get(
-    "/{id}",
-    response_model=uc_schema.ShowUC,
-    status_code=status.HTTP_200_OK,
-    dependencies=dependencies,
-)
-def get_uc_by_id(id: int, db: Session = Depends(get_db)) -> Any:
-    """Get uc by id
-
-    Args:
-        id (int): uc id
-        db (Session, optional): database session. Defaults to Depends(get_db).
-    """
-    return uc.get_uc(db, id_uc=id)
-
-
-@router.delete(
-    "/{id}",
-    response_model=uc_schema.ShowUC,
-    status_code=status.HTTP_200_OK,
-    dependencies=dependencies,
-)
-def delete_uc(id: int, db: Session = Depends(get_db)) -> Any:
-    """Delete uc and user account
-
-    Args:
-        id (int): uc id
-        db (Session, optional): database session. Defaults to Depends(get_db).
-    """
-    return uc.delete_uc(db, id_uc=id)
-
-
-@router.put(
-    "/{id}",
-    response_model=uc_schema.ShowUC,
-    status_code=status.HTTP_200_OK,
-    dependencies=dependencies,
-)
-def update_uc(
-    id: int, request: uc_schema.UpdateUC, db: Session = Depends(get_db)
-) -> Any:
-    """Update uc name an number
-
-    Args:
-        id (int): uc id
-        request (uc_schema.UpdateUC): uc name and number
-        db (Session, optional): database session. Defaults to Depends(get_db).
-    """
-    return uc.update_uc(db, uc_id=id, request=request)
-
-
 @router.post(
     "/subscription/",
     response_model=nm_schema.UCSubscriptionBase,
@@ -191,3 +123,101 @@ def remove_teacher(
         db (Session, optional): database session. Defaults to Depends(get_db).
     """
     return uc.remove_teacher(db, request)
+
+
+@router.post(
+    "/semester", response_model=nm_schema.SemesterUCBase, status_code=status.HTTP_200_OK
+)
+def register_semester(
+    request: nm_schema.SemesterUCBase, db: Session = Depends(get_db)
+) -> Any:
+    """Register semester in UC
+
+    Args:
+        request (nm_schema.SemesterUCBase): request data
+        db (Session, optional): database session. Defaults to Depends(get_db).
+    """
+    return uc.register_semester(db, request)
+
+
+@router.delete(
+    "/semester", response_model=nm_schema.SemesterUCBase, status_code=status.HTTP_200_OK
+)
+def remove_semester(
+    request: nm_schema.SemesterUCBase, db: Session = Depends(get_db)
+) -> Any:
+    """Remove semester from UC
+
+    Args:
+        request (nm_schema.SemesterUCBase): association data
+        db (Session, optional): database session. Defaults to Depends(get_db).
+    """
+    return uc.remove_semester(db, request)
+
+
+@router.get(
+    "/list",
+    response_model=List[uc_schema.ShowUC],
+    status_code=status.HTTP_200_OK,
+    dependencies=dependencies,
+)
+def get_ucs(db: Session = Depends(get_db), skip: int = 0, limit: int = 100) -> Any:
+    """Get List of ucs
+
+    Args:
+        db (Session, optional): database session. Defaults to Depends(get_db).
+        skip (int, optional): rows to skip. Defaults to 0.
+        limit (int, optional): limit of rows. Defaults to 100.
+    """
+    return uc.get_ucs(db, skip=skip, limit=limit)
+
+
+@router.get(
+    "/{id}",
+    response_model=uc_schema.ShowUC,
+    status_code=status.HTTP_200_OK,
+    dependencies=dependencies,
+)
+def get_uc_by_id(id: int, db: Session = Depends(get_db)) -> Any:
+    """Get uc by id
+
+    Args:
+        id (int): uc id
+        db (Session, optional): database session. Defaults to Depends(get_db).
+    """
+    return uc.get_uc(db, id_uc=id)
+
+
+@router.delete(
+    "/{id}",
+    response_model=uc_schema.ShowUC,
+    status_code=status.HTTP_200_OK,
+    dependencies=dependencies,
+)
+def delete_uc(id: int, db: Session = Depends(get_db)) -> Any:
+    """Delete uc and user account
+
+    Args:
+        id (int): uc id
+        db (Session, optional): database session. Defaults to Depends(get_db).
+    """
+    return uc.delete_uc(db, id_uc=id)
+
+
+@router.put(
+    "/{id}",
+    response_model=uc_schema.ShowUC,
+    status_code=status.HTTP_200_OK,
+    dependencies=dependencies,
+)
+def update_uc(
+    id: int, request: uc_schema.UpdateUC, db: Session = Depends(get_db)
+) -> Any:
+    """Update uc name an number
+
+    Args:
+        id (int): uc id
+        request (uc_schema.UpdateUC): uc name and number
+        db (Session, optional): database session. Defaults to Depends(get_db).
+    """
+    return uc.update_uc(db, uc_id=id, request=request)
