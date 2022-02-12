@@ -10,13 +10,14 @@ This module define the model operations for the UCs
 
 from typing import List
 
-from db.ucs import UC, InscricoesUC, SemestresUC, UCDocentes
+from db.ucs import UC, InscricoesUC, Periodos, SemestresUC, UCDocentes
 from fastapi import HTTPException, status
 from models.course import check_course_exists_by_id
 from models.helpers import semester_exists_by_id
 from models.student import check_student_by_id
 from models.teacher import check_teacher_by_id
 from schemas import nm_schema, uc_schema
+from schemas.schedules_schema import CreateSchedule, ShowSchedule
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
 from utils import Utils
@@ -532,6 +533,112 @@ def remove_semester(
             detail=Utils.error_msg(
                 status.HTTP_409_CONFLICT,
                 "Error removing semester from UC",
+                error=repr(e),
+            ),
+        )
+
+
+def add_schedule(db: Session, request: CreateSchedule, /) -> ShowSchedule:
+    """Add schedule to UC
+
+    Args:
+        db (Session): database session
+        request (CreateSchedule): schedule data
+
+    Raises:
+        HTTPException: UC not found
+        HTTPException: Error creating schedule
+
+    Returns:
+        ShowSchedule: schedule data
+    """
+    uc_id = request.id_uc
+    week_day = request.dia_semana
+    start_time = request.hora_inicio
+    end_time = request.hora_fim
+
+    if not check_uc_exists_by_id(db, uc_id=uc_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=Utils.error_msg(
+                status.HTTP_404_NOT_FOUND,
+                f"UC with id: {uc_id} not found!",
+            ),
+        )
+
+    if (
+        db.query(Periodos)
+        .filter(
+            and_(
+                Periodos.id_uc == uc_id,
+                Periodos.dia_semana == week_day,
+                Periodos.hora_inicio == start_time,
+                Periodos.hora_fim == end_time,
+            )
+        )
+        .first()
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_302_FOUND,
+            detail=Utils.error_msg(
+                status.HTTP_302_FOUND, "Schedule already exists for this UC"
+            ),
+        )
+    new_schedule: Periodos = Periodos(
+        id_uc=uc_id, dia_semana=week_day, hora_inicio=start_time, hora_fim=end_time
+    )
+    try:
+        db.add(new_schedule)
+        db.commit()
+        db.refresh(new_schedule)
+        return new_schedule
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=Utils.error_msg(
+                status.HTTP_409_CONFLICT,
+                "Error creating schedule",
+                error=repr(e),
+            ),
+        )
+
+
+def remove_schedule(db: Session, /, *, schedule_id: int) -> ShowSchedule:
+    """Remove schedule from UC
+
+    Args:
+        db (Session): database session
+        schedule_id (int): schedule id
+
+    Raises:
+        HTTPException: Schedule not found
+        HTTPException: Error removing schedule
+
+    Returns:
+        ShowSchedule: removed schedule
+    """
+    schedule = db.query(Periodos).get(schedule_id)
+    if not schedule:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=Utils.error_msg(
+                status.HTTP_404_NOT_FOUND,
+                f"Schedule with id: {schedule_id} not found!",
+            ),
+        )
+
+    try:
+        db.delete(schedule)
+        db.commit()
+        return schedule
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=Utils.error_msg(
+                status.HTTP_409_CONFLICT,
+                "Error removing schedule from UC",
                 error=repr(e),
             ),
         )

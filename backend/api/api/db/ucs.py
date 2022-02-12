@@ -1,5 +1,5 @@
 from database import Base
-from sqlalchemy import Column, Date, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Column, Date, ForeignKey, Integer, String, Time
 from sqlalchemy.orm import relationship
 
 
@@ -71,8 +71,8 @@ class Periodos(Base):
     id_periodo = Column(Integer, primary_key=True, autoincrement=True, index=True)
     id_uc = Column(Integer, ForeignKey("uc.id_uc"), nullable=False)
     dia_semana = Column(Integer, nullable=False)
-    hora_inicio = Column(DateTime, nullable=False)
-    hora_fim = Column(DateTime, nullable=False)
+    hora_inicio = Column(Time, nullable=False)
+    hora_fim = Column(Time, nullable=False)
 
     aulas = relationship("Aulas", back_populates="periodo")
     uc = relationship("UC", back_populates="periodos")

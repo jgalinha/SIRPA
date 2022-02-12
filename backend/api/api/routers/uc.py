@@ -14,6 +14,7 @@ from fastapi import APIRouter, Depends, status
 from models import uc
 from oauth2 import get_current_user
 from schemas import nm_schema, uc_schema
+from schemas.schedules_schema import CreateSchedule, ShowSchedule
 from sqlalchemy.orm import Session
 
 router = APIRouter(tags=["UC"], prefix="/uc")
@@ -126,7 +127,10 @@ def remove_teacher(
 
 
 @router.post(
-    "/semester", response_model=nm_schema.SemesterUCBase, status_code=status.HTTP_200_OK
+    "/semester",
+    response_model=nm_schema.SemesterUCBase,
+    status_code=status.HTTP_200_OK,
+    dependencies=dependencies,
 )
 def register_semester(
     request: nm_schema.SemesterUCBase, db: Session = Depends(get_db)
@@ -141,7 +145,10 @@ def register_semester(
 
 
 @router.delete(
-    "/semester", response_model=nm_schema.SemesterUCBase, status_code=status.HTTP_200_OK
+    "/semester",
+    response_model=nm_schema.SemesterUCBase,
+    status_code=status.HTTP_200_OK,
+    dependencies=dependencies,
 )
 def remove_semester(
     request: nm_schema.SemesterUCBase, db: Session = Depends(get_db)
@@ -153,6 +160,30 @@ def remove_semester(
         db (Session, optional): database session. Defaults to Depends(get_db).
     """
     return uc.remove_semester(db, request)
+
+
+@router.post("/schedule", response_model=ShowSchedule, status_code=status.HTTP_200_OK)
+def add_schedule(request: CreateSchedule, db: Session = Depends(get_db)) -> Any:
+    """Add schedule to UC
+
+    Args:
+        request (CreateSchedule): schedule data
+        db (Session, optional): database session. Defaults to Depends(get_db).
+    """
+    return uc.add_schedule(db, request)
+
+
+@router.delete(
+    "/schedule/{id}", response_model=ShowSchedule, status_code=status.HTTP_200_OK
+)
+def remove_schedule(id: int, db: Session = Depends(get_db)) -> Any:
+    """Remove schedule from UC
+
+    Args:
+        id (int): schedule id
+        db (Session, optional): database session. Defaults to Depends(get_db).
+    """
+    return uc.remove_schedule(db, schedule_id=id)
 
 
 @router.get(
