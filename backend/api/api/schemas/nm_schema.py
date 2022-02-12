@@ -70,3 +70,7 @@ class CourseSubscriptionBase(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class ShowCourseSubscription(CourseSubscriptionBase):
+    pass

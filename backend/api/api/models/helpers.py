@@ -15,6 +15,35 @@ from sqlalchemy.orm import Session
 from utils import Utils
 
 
+def year_exists_by_id(db: Session, /, *, year_id: int) -> bool:
+    """Check if year exists by id
+
+    Args:
+        db (Session): database session
+        year_id (int): year id
+
+    Raises:
+        HTTPException: Error checking year
+
+    Returns:
+        bool: year exists
+    """
+    try:
+        year = db.query(AnoCurricular).get(year_id)
+        if year:
+            return True
+        return False
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=Utils.error_msg(
+                status.HTTP_409_CONFLICT,
+                "Error checking if year exists!",
+                error=repr(e),
+            ),
+        )
+
+
 def year_exists(db: Session, /, *, year: str) -> bool:
     """Check if year exists
 

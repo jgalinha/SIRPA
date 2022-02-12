@@ -21,7 +21,12 @@ router = APIRouter(tags=["Ferramentas"], prefix="/tools")
 dependencies = [Depends(get_current_user)]
 
 
-@router.post("/year", response_model=ShowYear, status_code=status.HTTP_200_OK)
+@router.post(
+    "/year",
+    response_model=ShowYear,
+    status_code=status.HTTP_200_OK,
+    dependencies=dependencies,
+)
 def add_year(request: CreateYear, db: Session = Depends(get_db)) -> Any:
     """Add an year
 
@@ -32,7 +37,12 @@ def add_year(request: CreateYear, db: Session = Depends(get_db)) -> Any:
     return helpers.add_year(db, request)
 
 
-@router.delete("/year/{id}", response_model=ShowYear, status_code=status.HTTP_200_OK)
+@router.delete(
+    "/year/{id}",
+    response_model=ShowYear,
+    status_code=status.HTTP_200_OK,
+    dependencies=dependencies,
+)
 def remove_year(id: int, db: Session = Depends(get_db)) -> Any:
     """Remove a year
 
