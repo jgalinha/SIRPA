@@ -18,7 +18,7 @@ from sqlalchemy.orm import Session
 from utils import Utils
 
 
-def _check_teacher_exists(db: Session, /, *, teacher_nr: int) -> bool:
+def check_teacher_exists(db: Session, /, *, teacher_nr: int) -> bool:
     """Check if a teacher nr already exists in database
 
     Args:
@@ -42,6 +42,64 @@ def _check_teacher_exists(db: Session, /, *, teacher_nr: int) -> bool:
             detail=Utils.error_msg(
                 status.HTTP_500_INTERNAL_SERVER_ERROR,
                 "Error checking if teacher exists",
+                error=repr(e),
+            ),
+        )
+
+
+def check_teacher_by_id(db: Session, /, *, teacher_id: int) -> bool:
+    """Check if a teacher already exists in database
+
+    Args:
+        db (Session): database session
+        teacher_id (int): teacher id
+
+    Raises:
+        HTTPException: server error
+
+    Returns:
+        bool: teacher exists
+    """
+    try:
+        teacher = db.query(Docentes).get(teacher_id)
+        if teacher:
+            return True
+        return False
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=Utils.error_msg(
+                status.HTTP_500_INTERNAL_SERVER_ERROR,
+                "Error checking if teacher exists",
+                error=repr(e),
+            ),
+        )
+
+
+def check_teacher_by_user_id(db: Session, /, *, user_id: int) -> bool:
+    """Check if a given user id is teacher
+
+    Args:
+        db (Session): database session
+        user_id (int): user id
+
+    Raises:
+        HTTPException: error checking teacher
+
+    Returns:
+        bool: is teacher
+    """
+    try:
+        teacher = db.query(Docentes).filter(Docentes.id_utilizador == user_id).first()
+        if teacher:
+            return True
+        return False
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=Utils.error_msg(
+                status.HTTP_409_CONFLICT,
+                "Error checking teacher",
                 error=repr(e),
             ),
         )
@@ -106,35 +164,6 @@ def get_teacher_by_number(
         teacher_schema.ShowTeacher: teacher details
     """
     return db.query(Docentes).filter(Docentes.nr_docente == teacher_nr).first()
-
-
-def check_teacher_by_user_id(db: Session, /, *, user_id: int) -> bool:
-    """Check if a given user id is teacher
-
-    Args:
-        db (Session): database session
-        user_id (int): user id
-
-    Raises:
-        HTTPException: error checking teacher
-
-    Returns:
-        bool: is teacher
-    """
-    try:
-        teacher = db.query(Docentes).filter(Docentes.id_utilizador == user_id).first()
-        if teacher:
-            return True
-        return False
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=Utils.error_msg(
-                status.HTTP_409_CONFLICT,
-                "Error checking teacher",
-                error=repr(e),
-            ),
-        )
 
 
 def get_teacher(db: Session, /, *, id_teacher: int) -> teacher_schema.ShowTeacher:
@@ -231,7 +260,7 @@ def create_teacher(
         raise HTTPException(
             status_code=status.HTTP_302_FOUND, detail="user already exists"
         )
-    if _check_teacher_exists(db, teacher_nr=request.nr_docente):
+    if check_teacher_exists(db, teacher_nr=request.nr_docente):
         raise HTTPException(
             status_code=status.HTTP_302_FOUND, detail="teacher already exists"
         )

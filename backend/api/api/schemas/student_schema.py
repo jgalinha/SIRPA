@@ -14,22 +14,18 @@ class StudentBase(BaseModel):
     nome: str
     nr_aluno: int
 
+    class Config:
+        orm_mode = True
+
 
 class CreateStudent(StudentBase):
     utilizador: user_schema.UserCreate
 
-    class Config:
-        orm_mode = True
-
 
 class UpdateStudent(StudentBase):
-    class Config:
-        orm_mode = True
+    pass
 
 
 class ShowStudent(StudentBase):
     id_aluno: int
     utilizador: user_schema.ShowUser
-
-    class Config:
-        orm_mode = True

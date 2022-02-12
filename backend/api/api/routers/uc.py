@@ -8,6 +8,7 @@ This module set the routes for the ucs path of the api
 """
 
 from typing import Any, List
+from urllib import request
 
 from database import get_db
 from fastapi import APIRouter, Depends, status
@@ -125,6 +126,7 @@ def update_uc(
     "/subscription/",
     response_model=nm_schema.UCSubscriptionBase,
     status_code=status.HTTP_200_OK,
+    dependencies=dependencies,
 )
 def subscribe_uc(
     request: nm_schema.UCSubscriptionBase, db: Session = Depends(get_db)
@@ -139,9 +141,10 @@ def subscribe_uc(
 
 
 @router.delete(
-    "/subscription",
+    "/subscription/",
     response_model=nm_schema.UCunSubscriptionBase,
     status_code=status.HTTP_200_OK,
+    dependencies=dependencies,
 )
 def unsubscribe_uc(
     request: nm_schema.UCunSubscriptionBase, db: Session = Depends(get_db)
@@ -153,3 +156,37 @@ def unsubscribe_uc(
         db (Session, optional): database session. Defaults to Depends(get_db).
     """
     return uc.unsubscribeUC(db, request)
+
+
+@router.post(
+    "/register/teacher/",
+    response_model=nm_schema.TeacherUCBase,
+    status_code=status.HTTP_200_OK,
+)
+def add_teacher(
+    resquest: nm_schema.TeacherUCBase, db: Session = Depends(get_db)
+) -> Any:
+    """Register teacher in UC
+
+    Args:
+        resquest (nm_schema.TeacherUCBase): request data
+        db (Session, optional): database session. Defaults to Depends(get_db).
+    """
+    return uc.add_teacher(db, resquest)
+
+
+@router.delete(
+    "/register/teacher/",
+    response_model=nm_schema.TeacherUCBase,
+    status_code=status.HTTP_200_OK,
+)
+def remove_teacher(
+    request: nm_schema.TeacherUCBase, db: Session = Depends(get_db)
+) -> Any:
+    """Remove teacher from UC
+
+    Args:
+        request (nm_schema.TeacherUCBase): request data
+        db (Session, optional): database session. Defaults to Depends(get_db).
+    """
+    return uc.remove_teacher(db, request)

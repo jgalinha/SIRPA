@@ -11,16 +11,17 @@ This module define the model operations for the UCs
 from operator import and_
 from typing import List
 
-from db.ucs import UC, InscricoesUC
+from db.ucs import UC, InscricoesUC, UCDocentes
 from fastapi import HTTPException, status
-from models import course as Course
+from models.course import check_course_exists_by_id
 from models.student import check_student_by_id
+from models.teacher import check_teacher_by_id
 from schemas import nm_schema, uc_schema
 from sqlalchemy.orm import Session
 from utils import Utils
 
 
-def _check_uc_exists(db: Session, /, *, name_uc: str) -> bool:
+def check_uc_exists(db: Session, /, *, name_uc: str) -> bool:
     """Check if a uc name already exists in database
 
     Args:
@@ -49,7 +50,7 @@ def _check_uc_exists(db: Session, /, *, name_uc: str) -> bool:
         )
 
 
-def _check_uc_exists_by_id(db: Session, /, *, uc_id: int) -> bool:
+def check_uc_exists_by_id(db: Session, /, *, uc_id: int) -> bool:
     """Check if a uc id exists in database
 
     Args:
@@ -220,15 +221,8 @@ def create_uc(db: Session, request: uc_schema.CreateUC, /) -> uc_schema.ShowUC:
     Returns:
         uc: uc details
     """
-    if not Course._check_course_exists_by_id(db, id_course=request.id_curso):
-        raise HTTPException(
-            status_code=status.HTTP_302_FOUND, detail="course don't exists"
-        )
-    if _check_uc_exists(db, name_uc=request.nome_uc):
-        raise HTTPException(
-            status_code=status.HTTP_302_FOUND, detail="uc already exists"
-        )
-
+    check_course_exists_by_id(db, id_course=request.id_curso)
+    check_uc_exists(db, name_uc=request.nome_uc)
     try:
         new_uc: UC = UC(
             nome_uc=request.nome_uc,
@@ -271,25 +265,11 @@ def subscribe_uc(
     id_student = request.id_aluno
     id_uc = request.id_uc
 
-    if not _check_uc_exists_by_id(db, uc_id=id_uc):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=Utils.error_msg(
-                status.HTTP_404_NOT_FOUND, f"UC with id: {id_uc} not found!"
-            ),
-        )
-
-    if not check_student_by_id(db, student_id=id_student):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=Utils.error_msg(
-                status.HTTP_404_NOT_FOUND, f"Student with id: {id_student} not found!"
-            ),
-        )
-
+    check_uc_exists_by_id(db, uc_id=id_uc)
+    check_student_by_id(db, student_id=id_student)
     try:
         new_uc_subscription: InscricoesUC = InscricoesUC(
-            id_aluno=id_student, id_uc=id_uc, data_inscricao=request.data_incricao
+            id_aluno=id_student, id_uc=id_uc, data_inscricao=request.data_inscricao
         )
         db.add(new_uc_subscription)
         db.commit()
@@ -350,6 +330,96 @@ def unsubscribeUC(
             detail=Utils.error_msg(
                 status.HTTP_409_CONFLICT,
                 "Error unsubscribing",
+                error=repr(e),
+            ),
+        )
+
+
+def add_teacher(
+    db: Session, request: nm_schema.TeacherUCBase, /
+) -> nm_schema.TeacherUCBase:
+    """Add teacher to UC
+
+    Args:
+        db (Session): database session
+        request (nm_schema.TeacherUCBase): request data
+
+    Raises:
+        HTTPException: Error found
+
+    Returns:
+        nm_schema.TeacherUCBase: inserted data
+    """
+    id_teacher = request.id_docente
+    id_uc = request.id_uc
+
+    check_uc_exists_by_id(db, uc_id=id_uc)
+    check_teacher_by_id(db, teacher_id=id_teacher)
+    try:
+        new_association: UCDocentes = UCDocentes(
+            id_uc=id_uc,
+            id_docente=id_teacher,
+        )
+        db.add(new_association)
+        db.commit()
+        db.refresh(new_association)
+        return new_association
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=Utils.error_msg(
+                status.HTTP_409_CONFLICT,
+                "Error registering teacher!",
+                error=repr(e),
+            ),
+        )
+
+
+def remove_teacher(
+    db: Session, request: nm_schema.TeacherUCBase, /
+) -> nm_schema.TeacherUCBase:
+    """Remove teacher from UC
+
+    Args:
+        db (Session): database session
+        request (nm_schema.TeacherUCBase): request data
+
+    Raises:
+        HTTPException: Regestry not found
+        HTTPException: Error removing teacher from UC
+
+    Returns:
+        nm_schema.TeacherUCBase: deleted data
+    """
+    teacher_id = request.id_docente
+    uc_id = request.id_uc
+
+    association = (
+        db.query(UCDocentes)
+        .filter(and_(UCDocentes.id_docente == teacher_id, UCDocentes.id_uc == uc_id))
+        .first()
+    )
+
+    if not association:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=Utils.error_msg(
+                status.HTTP_404_NOT_FOUND,
+                "Registry not found",
+            ),
+        )
+    try:
+        db.delete(association)
+        db.commit()
+        return association
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=Utils.error_msg(
+                status.HTTP_409_CONFLICT,
+                "Error removing teacher from UC",
                 error=repr(e),
             ),
         )

@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 from utils import Utils
 
 
-def _check_course_exists_by_id(db: Session, /, *, id_course: int) -> bool:
+def check_course_exists_by_id(db: Session, /, *, id_course: int) -> bool:
     """Check if a course already exists in database by id
 
     Args:
@@ -45,7 +45,7 @@ def _check_course_exists_by_id(db: Session, /, *, id_course: int) -> bool:
         )
 
 
-def _check_course_exists(db: Session, /, *, name: str) -> bool:
+def check_course_exists(db: Session, /, *, name: str) -> bool:
     """Check if a course already exists in database
 
     Args:
@@ -106,11 +106,7 @@ def create_course(
     Returns:
         courses_schema.ShowCourse: course details
     """
-    if _check_course_exists(db, name=request.nome_curso):
-        raise HTTPException(
-            status_code=status.HTTP_302_FOUND,
-            detail=Utils.error_msg(status.HTTP_302_FOUND, "Course name already exists"),
-        )
+    check_course_exists(db, name=request.nome_curso)
     try:
         new_course: Cursos = Cursos(
             nome_curso=request.nome_curso, descricao_curso=request.descricao_curso

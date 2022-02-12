@@ -14,26 +14,21 @@ class TeacherBase(BaseModel):
     nome: str
     nr_docente: int
 
+    class Config:
+        orm_mode = True
+
 
 class CreateTeacher(TeacherBase):
     utilizador: user_schema.UserCreate
 
-    class Config:
-        orm_mode = True
-
 
 class UpdateTeacher(TeacherBase):
-    class Config:
-        orm_mode = True
+    pass
 
 
 class ShowTeacher(TeacherBase):
     id_docente: int
-
     utilizador: user_schema.ShowUser
-
-    class Config:
-        orm_mode = True
 
 
 class Teacher(TeacherBase):
