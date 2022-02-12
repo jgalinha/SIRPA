@@ -23,6 +23,104 @@ from sqlalchemy.orm import Session
 from utils import Utils
 
 
+def check_if_teacher_in_uc(db: Session, /, *, teacher_id: int, uc_id: int) -> bool:
+    """Check if an teacher is in an UC
+
+    Args:
+        db (Session): database session
+        teacher_id (int): teacher id
+        uc_id (int): uc id
+
+    Raises:
+        HTTPException: Error checking
+
+    Returns:
+        bool: teacher is in
+    """
+    try:
+        is_in = (
+            db.query(UCDocentes)
+            .filter(
+                and_(UCDocentes.id_docente == teacher_id, UCDocentes.id_uc == uc_id)
+            )
+            .first()
+        )
+        if is_in:
+            return True
+        return False
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=Utils.error_msg(
+                status.HTTP_409_CONFLICT,
+                "Error checking if teacher is in uc",
+                error=repr(e),
+            ),
+        )
+
+
+def schedule_exists_by_id(db: Session, schedule_id: int, /) -> bool:
+    """Check id schedule exists
+
+    Args:
+        db (Session): database session
+        schedule_id (int): schedule id
+
+    Raises:
+        HTTPException: Error checking schedule
+
+    Returns:
+        bool: schedule exists
+    """
+    try:
+        if db.query(Periodos).get(schedule_id):
+            return True
+        return False
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=Utils.error_msg(
+                status.HTTP_409_CONFLICT,
+                "Error checking if schedule exists",
+                error=repr(e),
+            ),
+        )
+
+
+def schedule_in_uc(db: Session, /, *, schedule_id: int, uc_id: int) -> bool:
+    """Check id schedule is in UC
+
+    Args:
+        db (Session): database session
+        schedule_id (int): schedule id
+        uc_id (int): uc id
+
+    Raises:
+        HTTPException: Error checking if schedule is in UC
+
+    Returns:
+        bool: is in
+    """
+    schedule = (
+        db.query(Periodos)
+        .filter(and_(Periodos.id_periodo == schedule_id, Periodos.id_uc == uc_id))
+        .first()
+    )
+    try:
+        if schedule:
+            return True
+        return False
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=Utils.error_msg(
+                status.HTTP_409_CONFLICT,
+                "Error checking if schedule is in uc",
+                error=repr(e),
+            ),
+        )
+
+
 def check_uc_exists(db: Session, /, *, name_uc: str) -> bool:
     """Check if a uc name already exists in database
 

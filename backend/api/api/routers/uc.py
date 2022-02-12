@@ -162,7 +162,12 @@ def remove_semester(
     return uc.remove_semester(db, request)
 
 
-@router.post("/schedule", response_model=ShowSchedule, status_code=status.HTTP_200_OK)
+@router.post(
+    "/schedule",
+    response_model=ShowSchedule,
+    status_code=status.HTTP_200_OK,
+    dependencies=dependencies,
+)
 def add_schedule(request: CreateSchedule, db: Session = Depends(get_db)) -> Any:
     """Add schedule to UC
 
@@ -174,7 +179,10 @@ def add_schedule(request: CreateSchedule, db: Session = Depends(get_db)) -> Any:
 
 
 @router.delete(
-    "/schedule/{id}", response_model=ShowSchedule, status_code=status.HTTP_200_OK
+    "/schedule/{id}",
+    response_model=ShowSchedule,
+    status_code=status.HTTP_200_OK,
+    dependencies=dependencies,
 )
 def remove_schedule(id: int, db: Session = Depends(get_db)) -> Any:
     """Remove schedule from UC
