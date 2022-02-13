@@ -288,3 +288,17 @@ def create_student(
                 error=repr(e),
             ),
         )
+
+
+def today(db: Session, /, *, student_id: int) -> student_schema.TodayStudent:
+    """Get list of student classes
+
+    Args:
+        db (Session): database session
+        student_id (int): student id
+
+    Returns:
+        student_schema.TodayStudent: student classes
+    """
+    today = db.query(Alunos).filter(Alunos.id_aluno == student_id).first()
+    return today

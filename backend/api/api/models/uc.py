@@ -138,10 +138,7 @@ def check_uc_exists(db: Session, /, *, name_uc: str) -> bool:
         uc = db.query(UC).filter(UC.nome_uc == name_uc).all()
         if uc:
             return True
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=Utils.error_msg(status.HTTP_404_NOT_FOUND, "UC not found!"),
-        )
+        return False
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -170,10 +167,7 @@ def check_uc_exists_by_id(db: Session, /, *, uc_id: int) -> bool:
         uc = db.query(UC).get(uc_id)
         if uc:
             return True
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=Utils.error_msg(status.HTTP_404_NOT_FOUND, "UC not found!"),
-        )
+        return False
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -327,8 +321,22 @@ def create_uc(db: Session, request: uc_schema.CreateUC, /) -> uc_schema.ShowUC:
     Returns:
         uc: uc details
     """
-    check_course_exists_by_id(db, id_course=request.id_curso)
-    check_uc_exists(db, name_uc=request.nome_uc)
+    if not check_course_exists_by_id(db, id_course=request.id_curso):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=Utils.error_msg(
+                status.HTTP_404_NOT_FOUND,
+                f"Course with id: {request.id_curso} not found!",
+            ),
+        )
+    if check_uc_exists(db, name_uc=request.nome_uc):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=Utils.error_msg(
+                status.HTTP_404_NOT_FOUND, f"UC with name: {request.nome_uc} found!"
+            ),
+        )
+
     try:
         new_uc: UC = UC(
             nome_uc=request.nome_uc,

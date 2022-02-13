@@ -9,7 +9,7 @@ This module define the pydantic schema of alunos data
 from datetime import date, time
 from typing import List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from schemas import user_schema
 
 
@@ -56,6 +56,12 @@ class TodaySchedules(BaseModel):
     class Config:
         orm_mode = True
 
+    @validator("aulas")
+    def ensure_aulas(cls, v):
+        for aula in v:
+            if aula.data == date.today():
+                return v
+
 
 class TodayUC(BaseModel):
     nome_uc: str
@@ -64,6 +70,12 @@ class TodayUC(BaseModel):
 
     class Config:
         orm_mode = True
+
+    @validator("periodos")
+    def ensure_peridos(cls, v):
+        for periodo in v:
+            if periodo.aulas:
+                return v
 
 
 class TodayUCSubscrition(BaseModel):
@@ -74,7 +86,18 @@ class TodayUCSubscrition(BaseModel):
     class Config:
         orm_mode = True
 
+    @validator("uc")
+    def ensure_uc(cls, v):
+        if v.periodos:
+            return v
+
 
 class TodayStudent(StudentBase):
     id_aluno: int
     inscricoes_ucs: List[TodayUCSubscrition]
+
+    @validator("inscricoes_ucs")
+    def ensure_inscricoes(cls, v):
+        for uc in v:
+            if uc.uc:
+                return v

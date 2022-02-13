@@ -73,6 +73,23 @@ def get_students(db: Session = Depends(get_db), skip: int = 0, limit: int = 100)
 
 
 @router.get(
+    "/today",
+    response_model=student_schema.TodayStudent,
+    status_code=status.HTTP_200_OK,
+    dependencies=dependencies,
+)
+def student_today(id: int, db: Session = Depends(get_db)) -> Any:
+    """Get classes of the day
+
+    Args:
+        id (int): student id
+        db (Session, optional): database session. Defaults to Depends(get_db).
+    """
+    today = student.today(db, student_id=id)
+    return today
+
+
+@router.get(
     "/{id}",
     response_model=student_schema.ShowStudent,
     status_code=status.HTTP_200_OK,

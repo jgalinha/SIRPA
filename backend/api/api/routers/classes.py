@@ -21,7 +21,12 @@ router = APIRouter(tags=["Aulas"], prefix="/class")
 dependencies = [Depends(get_current_user)]
 
 
-@router.post("/", response_model=ShowClass, status_code=status.HTTP_200_OK)
+@router.post(
+    "/",
+    response_model=ShowClass,
+    status_code=status.HTTP_200_OK,
+    dependencies=dependencies,
+)
 def create_class(request: CreateClass, db: Session = Depends(get_db)) -> Any:
     """Create class
 
@@ -32,7 +37,12 @@ def create_class(request: CreateClass, db: Session = Depends(get_db)) -> Any:
     return classes.create_class(db, request)
 
 
-@router.delete("/{id}", response_model=ShowClass, status_code=status.HTTP_200_OK)
+@router.delete(
+    "/{id}",
+    response_model=ShowClass,
+    status_code=status.HTTP_200_OK,
+    dependencies=dependencies,
+)
 def remove_class(id: int, db: Session = Depends(get_db)) -> Any:
     """Remove class
 
