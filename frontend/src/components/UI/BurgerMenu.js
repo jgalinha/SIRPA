@@ -1,6 +1,6 @@
 import React from "react";
 import { Menu, Transition } from "@headlessui/react";
-import { MenuIcon, CalendarIcon } from "@heroicons/react/outline";
+import { MenuIcon, CalendarIcon, BookOpenIcon } from "@heroicons/react/outline";
 import { Link } from "react-router-dom";
 
 const BurgerMenu = () => {
@@ -27,18 +27,32 @@ const BurgerMenu = () => {
               >
                 <Menu.Item>
                   {({ active }) => (
-                    <Link
-                      to="/today"
-                      className={`flex items-center px-4 py-2 text-lg ${
-                        active && "bg-red-700 rounded-md text-white"
-                      }`}
-                    >
-                      <CalendarIcon
-                        className="mr-3 h-5 w-5"
-                        aria-hidden="true"
-                      />
-                      Hoje!
-                    </Link>
+                    <>
+                      <Link
+                        to="/today"
+                        className={`flex items-center px-4 py-2 text-lg ${
+                          active && "bg-red-700 rounded-md text-white"
+                        }`}
+                      >
+                        <CalendarIcon
+                          className="mr-3 h-5 w-5"
+                          aria-hidden="true"
+                        />
+                        Hoje!
+                      </Link>
+                      <Link
+                        to="/ucs"
+                        className={`flex items-center px-4 py-2 text-lg ${
+                          active && "bg-red-700 rounded-md text-white"
+                        }`}
+                      >
+                        <BookOpenIcon
+                          className="mr-3 h-5 w-5"
+                          aria-hidden="true"
+                        />
+                        Disciplinas
+                      </Link>
+                    </>
                   )}
                 </Menu.Item>
               </Menu.Items>

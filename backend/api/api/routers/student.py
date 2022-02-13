@@ -57,7 +57,7 @@ def create_student(
 
 @router.get(
     "/list",
-    response_model=List[student_schema.ShowStudent],
+    response_model=List[student_schema.TodayStudent],
     status_code=status.HTTP_200_OK,
     dependencies=dependencies,
 )

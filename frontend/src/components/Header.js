@@ -66,7 +66,7 @@ const Header = () => {
                   <AcademicCapIcon className="flex mr-2 p-0 w-5 h-5" />
                 )}
                 {userRoles.isSuper && (
-                  <LightningBoltIcon className="flex text-yellow-400 mr-2 p-0 w-5 h-5" />
+                  <LightningBoltIcon className="flex fill-yellow-300 mr-2 p-0 w-5 h-5" />
                 )}
                 <span>{username}</span>
               </Link>

@@ -57,7 +57,7 @@ def create_class(db: Session, request: CreateClass, /) -> ShowClass:
             ),
         )
 
-    if not schedule_in_uc(db, schedule_id=schedule_in_uc, uc_id=uc_id):
+    if not schedule_in_uc(db, schedule_id=schedule_id, uc_id=uc_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=Utils.error_msg(
