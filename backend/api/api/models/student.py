@@ -290,15 +290,24 @@ def create_student(
         )
 
 
-def today(db: Session, /, *, student_id: int) -> student_schema.TodayStudent:
-    """Get list of student classes
-
-    Args:
-        db (Session): database session
-        student_id (int): student id
-
-    Returns:
-        student_schema.TodayStudent: student classes
-    """
-    today = db.query(Alunos).filter(Alunos.id_aluno == student_id).first()
-    return today
+def today(db: Session, /, *, user_id: int) -> student_schema.TodayStudent:
+    student_id = db.query(Alunos).filter(Alunos.id_utilizador == user_id).first()
+    if not student_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=Utils.error_msg(
+                status.HTTP_404_NOT_FOUND, f"Student with user id: {user_id} not found!"
+            ),
+        )
+    try:
+        today = db.query(Alunos).filter(Alunos.id_aluno == student_id.id_aluno).first()
+        return today
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=Utils.error_msg(
+                status.HTTP_409_CONFLICT,
+                "Error getting student day",
+                error=repr(e),
+            ),
+        )

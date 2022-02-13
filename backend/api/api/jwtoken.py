@@ -33,3 +33,14 @@ def verify_token(token: str, credentials_exception: HTTPException):
             raise credentials_exception
     except JWTError:
         raise credentials_exception
+
+
+def get_user_id(token: str, credentials_exception: HTTPException):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        id: int = payload.get("id")
+        if id is None:
+            raise credentials_exception
+        return id
+    except JWTError:
+        raise credentials_exception
