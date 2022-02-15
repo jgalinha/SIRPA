@@ -59,7 +59,7 @@ class TodaySchedules(BaseModel):
     @validator("aulas")
     def ensure_aulas(cls, v):
         for aula in v:
-            if aula.data == date.today():
+            if aula.data <= date.today():
                 return v
 
 

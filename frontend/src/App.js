@@ -12,6 +12,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 function App() {
   const authCtx = useContext(AuthContext);
   const queryClient = new QueryClient();
+  queryClient.clear();
 
   return (
     <QueryClientProvider client={queryClient}>

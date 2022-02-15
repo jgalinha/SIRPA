@@ -20,4 +20,4 @@ class Utils:
         Returns:
             Dict: dictionary with the error details
         """
-        return {"error": {"msg": msg, "code": code, "error detail": error}}
+        return {"error": {"msg": msg, "code": code, "error_detail": error}}
