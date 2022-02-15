@@ -6,7 +6,6 @@ This module define the model operations for the users
 @Author: José Galinha
 @Email: j.b.galinha@gmail.com
 """
-from crypt import Crypt
 from typing import List
 
 import schemas.user_schema as user_schema
@@ -14,6 +13,7 @@ from db.user import User
 from fastapi import HTTPException, status
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
+from tools import crypt
 from utils import Utils
 
 
@@ -43,6 +43,66 @@ def check_user_exists(db: Session, /, *, nome_utilizador: str, email: str) -> bo
             detail=Utils.error_msg(
                 status.HTTP_500_INTERNAL_SERVER_ERROR,
                 "Error checking if user exists",
+                error=repr(e),
+            ),
+        )
+
+
+def get_kr(db: Session, user_id: int) -> str:
+    """Get user private key
+
+    Args:
+        db (Session): database session
+        user_id (int): user id
+
+    Raises:
+        HTTPException: Error getting user id
+
+    Returns:
+        str: private key
+    """
+    try:
+        user = db.query(User).get(user_id)
+        kr = user.private_key
+        if kr:
+            return kr
+        raise Exception
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=Utils.error_msg(
+                status.HTTP_500_INTERNAL_SERVER_ERROR,
+                "Error geting user private key",
+                error=repr(e),
+            ),
+        )
+
+
+def get_ku(db: Session, user_id: int) -> str:
+    """Get user public key
+
+    Args:
+        db (Session): database session
+        user_id (int): user id
+
+    Raises:
+        HTTPException: Error getting user id
+
+    Returns:
+        str: public key
+    """
+    try:
+        user = db.query(User).get(user_id)
+        ku = user.public_key
+        if ku:
+            return ku
+        raise Exception
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=Utils.error_msg(
+                status.HTTP_500_INTERNAL_SERVER_ERROR,
+                "Error geting user public key",
                 error=repr(e),
             ),
         )
@@ -118,13 +178,13 @@ def get_user(db: Session, /, *, id_utilizador: int) -> user_schema.ShowUser:
 
 # def get_user_pub_key(db: Session, id_utilizador: int, password: str):
 #     pub_key = db.query(User).filter(User.id_utilizador == id_utilizador).first().public_key
-#     #kr = Crypt.load_priv_key(password, pub_key)
-#     ku = Crypt.load_pub_key(pub_key)
-#     cipher = Crypt.encrypt(ku, b"Test message")
+#     #kr = crypt.load_priv_key(password, pub_key)
+#     ku = crypt.load_pub_key(pub_key)
+#     cipher = crypt.encrypt(ku, b"Test message")
 #     ic(cipher)
 #     priv_key = db.query(User).filter(User.id_utilizador == id_utilizador).first().private_key
-#     kr = Crypt.load_priv_key(priv_key, password)
-#     plain = Crypt.decrypt(kr, cipher)
+#     kr = crypt.load_priv_key(priv_key, password)
+#     plain = crypt.decrypt(kr, cipher)
 #     ic(plain)
 #     return "bah"
 
@@ -146,11 +206,11 @@ def create_user(db: Session, request: user_schema.UserCreate, /) -> User:
         if not check_user_exists(
             db, nome_utilizador=request.nome_utilizador, email=request.email
         ):
-            key_pair = Crypt.generate_key_pair(request.password)
+            key_pair = crypt.generate_key_pair(request.password)
             new_user = User(
                 nome_utilizador=request.nome_utilizador,
                 email=request.email,
-                password=Crypt.bcrypt(request.password),
+                password=crypt.bcrypt(request.password),
                 private_key=key_pair[1],
                 public_key=key_pair[0],
             )

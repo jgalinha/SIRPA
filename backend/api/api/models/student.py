@@ -14,6 +14,7 @@ from db.alunos import Alunos
 from fastapi import HTTPException, status
 from models import user as User
 from schemas import student_schema
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 from utils import Utils
 
@@ -91,6 +92,43 @@ def check_student_by_id(db: Session, /, *, student_id: int) -> bool:
     """
     try:
         student = db.query(Alunos).get(student_id)
+        if student:
+            return True
+        return False
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=Utils.error_msg(
+                status.HTTP_409_CONFLICT,
+                "Error checking student",
+                error=repr(e),
+            ),
+        )
+
+
+def confirm_student_user_id(db: Session, /, *, user_id: int, student_id: int) -> bool:
+    """Check if user_id and student_id match
+
+    Args:
+        db (Session): database session
+        user_id (int): user id
+        student_id (int): student id
+
+    Raises:
+        HTTPException: Error checking student
+
+    Returns:
+        bool: match
+    """
+    try:
+        student = (
+            db.query(Alunos)
+            .filter(
+                and_(Alunos.id_aluno == student_id, Alunos.id_utilizador == user_id)
+            )
+            .first()
+        )
+
         if student:
             return True
         return False

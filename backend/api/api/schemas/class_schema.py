@@ -36,3 +36,12 @@ class ShowClass(ClassBase):
     id_uc: int
     id_docente: int
     id_periodo: int
+
+
+class CreateQRCodeClass(BaseModel):
+    id_aula: int
+    id_aluno: int
+    password: str
+
+    class Config:
+        orm_mode = True

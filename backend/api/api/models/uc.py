@@ -59,6 +59,42 @@ def check_if_teacher_in_uc(db: Session, /, *, teacher_id: int, uc_id: int) -> bo
         )
 
 
+def check_if_student_in_uc(db: Session, /, *, student_id: int, uc_id: int) -> bool:
+    """Check if an student is in an UC
+
+    Args:
+        db (Session): database session
+        student_id (int): student id
+        uc_id (int): uc id
+
+    Raises:
+        HTTPException: Error checking
+
+    Returns:
+        bool: student is in
+    """
+    try:
+        is_in = (
+            db.query(InscricoesUC)
+            .filter(
+                and_(InscricoesUC.id_aluno == student_id, InscricoesUC.id_uc == uc_id)
+            )
+            .first()
+        )
+        if is_in:
+            return True
+        return False
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=Utils.error_msg(
+                status.HTTP_409_CONFLICT,
+                "Error checking if student is in uc",
+                error=repr(e),
+            ),
+        )
+
+
 def schedule_exists_by_id(db: Session, schedule_id: int, /) -> bool:
     """Check id schedule exists
 

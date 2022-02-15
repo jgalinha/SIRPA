@@ -7,11 +7,24 @@ This module define the model operations for the Classes
 @Email: j.b.galinha@gmail.com
 """
 
+import base64
+import json
+from email.mime import base
+
 from db.aulas import Aulas
 from fastapi import HTTPException, status
-from models.uc import check_if_teacher_in_uc, check_uc_exists_by_id, schedule_in_uc
-from schemas.class_schema import CreateClass, ShowClass
+from icecream import ic
+from models import user
+from models.student import confirm_student_user_id
+from models.uc import (
+    check_if_student_in_uc,
+    check_if_teacher_in_uc,
+    check_uc_exists_by_id,
+    schedule_in_uc,
+)
+from schemas.class_schema import CreateClass, CreateQRCodeClass, ShowClass
 from sqlalchemy.orm import Session
+from tools import crypt
 from utils import Utils
 
 
@@ -117,3 +130,41 @@ def remove_class(db: Session, /, *, class_id: int) -> ShowClass:
                 error=repr(e),
             ),
         )
+
+
+def create_QRCode(db: Session, request: CreateQRCodeClass, /, *, user_id: int):
+    class_id = request.id_aula
+    student_id = request.id_aluno
+    password = request.password
+    aula = db.query(Aulas).get(class_id)
+    uc_id = aula.id_uc
+
+    if not confirm_student_user_id(db, user_id=user_id, student_id=student_id):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=Utils.error_msg(
+                status.HTTP_404_NOT_FOUND,
+                "User id and student id don't match",
+            ),
+        )
+
+    if not check_if_student_in_uc(db, student_id=student_id, uc_id=uc_id):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=Utils.error_msg(
+                status.HTTP_404_NOT_FOUND,
+                "Student is not in UC",
+            ),
+        )
+    msg = {"id_aluno": student_id, "id_aula": class_id}
+
+    encrypted_kr = user.get_kr(db, user_id)
+    kr = crypt.load_priv_key(encrypted_kr, password)
+    sign_msg = crypt.sign(kr, bytes(json.dumps(msg), "utf-8"))
+    sign_msg_b64 = base64.encodebytes(sign_msg)
+    # string_msg = sign_msg_b64.decode("utf-8")
+    # pub_key = user.get_ku(db, user_id)
+    # ku = crypt.load_pub_key(pub_key)
+    # msg_64 = base64.decodebytes(sign_msg_b64)
+    # ver_msg = crypt.verify(ku, bytes(json.dumps(msg), "utf-8"), msg_64)
+    return {"signature": sign_msg_b64, "msg": msg}

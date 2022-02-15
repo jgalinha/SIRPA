@@ -12,13 +12,22 @@ from typing import Any
 from database import get_db
 from fastapi import APIRouter, Depends, status
 from models import classes
-from oauth2 import get_current_user
-from schemas.class_schema import CreateClass, ShowClass
+from oauth2 import get_active_user, get_current_user
+from schemas.class_schema import CreateClass, CreateQRCodeClass, ShowClass
 from sqlalchemy.orm import Session
 
 router = APIRouter(tags=["Aulas"], prefix="/class")
 
 dependencies = [Depends(get_current_user)]
+
+
+@router.post("/qrcode", status_code=status.HTTP_200_OK)
+def create_qrcode(
+    request: CreateQRCodeClass,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(get_active_user),
+):
+    return classes.create_QRCode(db, request, user_id=user_id)
 
 
 @router.post(

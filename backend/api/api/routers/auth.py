@@ -1,5 +1,3 @@
-from crypt import Crypt
-
 from database import get_db
 from db.user import User
 from fastapi import APIRouter, HTTPException, Response, status
@@ -8,6 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from jwtoken import create_access_token
 from models import student, teacher
 from sqlalchemy.orm.session import Session
+from tools import crypt
 
 router = APIRouter(tags=["Autenticação"], prefix="/auth")
 
@@ -27,7 +26,7 @@ def login(
             },
         )
 
-    if not Crypt.verify_password(request.password, user.password):
+    if not crypt.verify_password(request.password, user.password):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail={
