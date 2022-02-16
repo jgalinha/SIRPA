@@ -13,13 +13,25 @@ from typing import Any, List
 from database import get_db
 from fastapi import APIRouter, Depends, status
 from models import teacher
-from oauth2 import get_current_user
+from oauth2 import get_active_user, get_current_user
 from schemas import teacher_schema
 from sqlalchemy.orm import Session
 
 router = APIRouter(tags=["Docentes"], prefix="/teacher")
 
 dependencies = [Depends(get_current_user)]
+
+
+@router.get(
+    "/today",
+    status_code=status.HTTP_200_OK,
+    response_model=teacher_schema.TodayTeacher,
+    dependencies=dependencies,
+)
+def teacher_today(
+    user_id: int = Depends(get_active_user), db: Session = Depends(get_db)
+) -> Any:
+    return teacher.today(db, user_id=user_id)
 
 
 @router.get(

@@ -288,3 +288,26 @@ def create_teacher(
                 error=repr(e),
             ),
         )
+
+
+def today(db: Session, /, *, user_id: int) -> teacher_schema.TodayTeacher:
+    try:
+        teacher = db.query(Docentes).filter(Docentes.id_utilizador == user_id).first()
+        if not teacher:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=Utils.error_msg(
+                    status.HTTP_404_NOT_FOUND,
+                    f"Teacher with user id: {user_id} not found!",
+                ),
+            )
+        return teacher
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=Utils.error_msg(
+                status.HTTP_409_CONFLICT,
+                "Error getting teacher day",
+                error=repr(e),
+            ),
+        )

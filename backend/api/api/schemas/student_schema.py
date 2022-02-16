@@ -6,6 +6,7 @@ This module define the pydantic schema of alunos data
 @Author: José Galinha
 @Email: j.b.galinha@gmail.com
 """
+
 from datetime import date, time
 from typing import List
 
