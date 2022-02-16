@@ -106,7 +106,7 @@ def check_student_by_id(db: Session, /, *, student_id: int) -> bool:
         )
 
 
-def confirm_student_user_id(db: Session, /, *, user_id: int, student_id: int) -> bool:
+def get_student_id_by_user_id(db: Session, /, *, user_id: int) -> bool:
     """Check if user_id and student_id match
 
     Args:
@@ -121,16 +121,10 @@ def confirm_student_user_id(db: Session, /, *, user_id: int, student_id: int) ->
         bool: match
     """
     try:
-        student = (
-            db.query(Alunos)
-            .filter(
-                and_(Alunos.id_aluno == student_id, Alunos.id_utilizador == user_id)
-            )
-            .first()
-        )
+        student = db.query(Alunos).filter(and_(Alunos.id_utilizador == user_id)).first()
 
         if student:
-            return True
+            return student.id_aluno
         return False
     except Exception as e:
         raise HTTPException(

@@ -9,13 +9,12 @@ This module define the model operations for the Classes
 
 import base64
 import json
-from email.mime import base
 
 from db.aulas import Aulas
 from fastapi import HTTPException, status
 from icecream import ic
 from models import user
-from models.student import confirm_student_user_id
+from models.student import get_student_id_by_user_id
 from models.uc import (
     check_if_student_in_uc,
     check_if_teacher_in_uc,
@@ -134,17 +133,17 @@ def remove_class(db: Session, /, *, class_id: int) -> ShowClass:
 
 def create_QRCode(db: Session, request: CreateQRCodeClass, /, *, user_id: int):
     class_id = request.id_aula
-    student_id = request.id_aluno
+    student_id = get_student_id_by_user_id(db, user_id=user_id)
     password = request.password
     aula = db.query(Aulas).get(class_id)
     uc_id = aula.id_uc
 
-    if not confirm_student_user_id(db, user_id=user_id, student_id=student_id):
+    if not student_id:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=Utils.error_msg(
                 status.HTTP_404_NOT_FOUND,
-                "User id and student id don't match",
+                "Student not found",
             ),
         )
 

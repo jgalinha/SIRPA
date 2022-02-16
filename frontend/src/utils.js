@@ -4,8 +4,20 @@ const randomColor = () => {
   return color;
 };
 
+const objToBodyObj = (obj) => {
+  var str = "";
+  for (var key in obj) {
+    if (str !== "") {
+      str += "&";
+    }
+    str += key + "=" + encodeURIComponent(obj[key]);
+  }
+  return str;
+};
+
 const Utils = {
   randomColor,
+  objToBodyObj,
 };
 
 export default Utils;

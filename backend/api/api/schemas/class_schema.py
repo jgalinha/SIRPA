@@ -40,7 +40,6 @@ class ShowClass(ClassBase):
 
 class CreateQRCodeClass(BaseModel):
     id_aula: int
-    id_aluno: int
     password: str
 
     class Config:

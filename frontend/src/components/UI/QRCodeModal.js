@@ -6,11 +6,12 @@ const QRCodeModal = (props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [presenca, setPresenca] = useState({
     id_aula: "",
-    id_aluno: "",
+    password: "",
   });
 
   useEffect(() => {
     setIsOpen(props.open);
+    setPresenca({ ...props.value });
   }, [props]);
 
   function closeModal() {
