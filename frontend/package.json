@@ -11,6 +11,7 @@
     "@testing-library/user-event": "^13.5.0",
     "@videsk/tailwind-random-color": "^0.2.0-beta",
     "axios": "^0.25.0",
+    "html5-qrcode": "^2.1.6",
     "jwt-decode": "^3.1.2",
     "loadenv": "^2.2.0",
     "moment": "^2.29.1",

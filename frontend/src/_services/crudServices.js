@@ -1,5 +1,4 @@
 import axios from "axios";
-import Utils from "../utils";
 
 console.log("crudServices loaded");
 
