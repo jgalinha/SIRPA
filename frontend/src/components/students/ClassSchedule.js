@@ -5,6 +5,7 @@ import { QrcodeIcon } from "@heroicons/react/outline";
 import QRCodeModal from "../UI/QRCodeModal";
 import AuthContext from "../../store/auth-context";
 import crudService from "../../_services/crudServices";
+import PasswordModal from "../UI/PasswordModal";
 
 const ClassSchedule = (props) => {
   moment.locale("pt");
@@ -25,6 +26,8 @@ const ClassSchedule = (props) => {
   const [idAluno, setIdAluno] = useState("");
   const [modal, setModal] = useState(false);
   const [qrcode, setQrcode] = useState("");
+  const [askPassword, setAskPassword] = useState(false);
+  const [idAula, setIdAula] = useState("");
 
   useEffect(() => {
     // TODO: order by hour
@@ -40,6 +43,10 @@ const ClassSchedule = (props) => {
     setModal(false);
   };
 
+  const closeAskPassword = () => {
+    setAskPassword(false);
+  };
+
   const requestQRCode = (data) => {
     const request = crudService.postAPI(
       authCtx,
@@ -48,6 +55,11 @@ const ClassSchedule = (props) => {
       setQrcode
     );
     setModal(true);
+  };
+
+  const handleAskPassword = (password) => {
+    setAskPassword(false);
+    requestQRCode({ id_aula: idAula, password: password });
   };
 
   return (
@@ -86,19 +98,21 @@ const ClassSchedule = (props) => {
               </div>
               <div className="w-1/12 mr-2">
                 <QrcodeIcon
-                  onClick={() =>
-                    // TODO: Solicitar password
-                    requestQRCode({
-                      id_aula: uc.id_aula,
-                      password: "string",
-                    })
-                  }
+                  onClick={() => {
+                    setIdAula(uc.id_aula);
+                    setAskPassword(!askPassword);
+                  }}
                   className="w-12 h-12 hover:stroke-red-500 hover:cursor-pointer"
                 />
                 <QRCodeModal
                   open={modal}
                   value={qrcode}
                   onClose={closeQRCodeModel}
+                />
+                <PasswordModal
+                  open={askPassword}
+                  onClose={closeAskPassword}
+                  onSubmit={handleAskPassword}
                 />
               </div>
             </div>

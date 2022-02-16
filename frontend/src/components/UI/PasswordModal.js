@@ -1,32 +1,26 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useEffect, useState } from "react";
-import { QRCode } from "react-qr-svg";
+import { Fragment, useState, useRef } from "react";
+import Button from "./Button/Button";
 
-const QRCodeModal = (props) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [presenca, setPresenca] = useState({
-    id_aula: "",
-    password: "",
-  });
-
-  useEffect(() => {
-    setIsOpen(props.open);
-    setPresenca({ ...props.value });
-  }, [props.open, props.value]);
+export default function PasswordModal(props) {
+  const passwordInput = useRef();
 
   function closeModal() {
-    setIsOpen(false);
-    setPresenca({});
     props.onClose();
   }
 
+  const submitHandler = () => {
+    props.onSubmit(passwordInput.current.value);
+  };
+
   return (
     <>
-      <Transition appear show={isOpen} as={Fragment}>
+      <Transition appear show={props.open} as={Fragment}>
         <Dialog
           as="div"
           className="fixed inset-0 z-10 overflow-y-auto"
-          onClose={closeModal}
+          onClose={() => {}}
+          initialFocus={passwordInput}
         >
           <div className="min-h-screen px-4 text-center">
             <Transition.Child
@@ -62,10 +56,34 @@ const QRCodeModal = (props) => {
                   as="h3"
                   className="text-lg font-medium leading-6 text-gray-900"
                 >
-                  Mostra o teu QRCode ao professor!
+                  Introduz a tua password!
                 </Dialog.Title>
                 <div className="mt-2">
-                  <QRCode value={JSON.stringify(presenca)} />
+                  <label className="font-semibold text-sm text-gray-600 pb-1 block">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    className="border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"
+                    ref={passwordInput}
+                  />
+                  <Button type="button" onClick={submitHandler}>
+                    <span className="inline-block mr-2">Gerar QRCode</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      className="w-4 h-4 inline-block"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M17 8l4 4m0 0l-4 4m4-4H3"
+                      />
+                    </svg>
+                  </Button>
                 </div>
 
                 <div className="mt-4">
@@ -84,6 +102,4 @@ const QRCodeModal = (props) => {
       </Transition>
     </>
   );
-};
-
-export default QRCodeModal;
+}
