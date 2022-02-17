@@ -105,6 +105,35 @@ def check_teacher_by_user_id(db: Session, /, *, user_id: int) -> bool:
         )
 
 
+def get_teacher_nr_by_user_id(db: Session, /, *, user_id: int) -> int:
+    """Get teacher numbert by user id
+
+    Args:
+        db (Session): database session
+        user_id (int): user id
+
+    Raises:
+        HTTPException: Error getting teacher
+
+    Returns:
+        int: teacher id
+    """
+    try:
+        teacher = db.query(Docentes).filter(Docentes.id_utilizador == user_id).first()
+        if teacher:
+            return teacher.id_docente
+        return False
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=Utils.error_msg(
+                status.HTTP_409_CONFLICT,
+                "Error getting teacher",
+                error=repr(e),
+            ),
+        )
+
+
 def update_teacher(
     db: Session, /, *, teacher_id: int, request: teacher_schema.UpdateTeacher
 ) -> teacher_schema.ShowTeacher:

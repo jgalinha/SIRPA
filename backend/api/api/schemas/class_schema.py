@@ -42,5 +42,18 @@ class CreateQRCodeClass(BaseModel):
     id_aula: int
     password: str
 
+
+class QRCodeMsgClass(BaseModel):
+    id_aluno: int
+    id_aula: int
+
+    class Config:
+        orm_mode = True
+
+
+class ReadQRCodeClass(BaseModel):
+    msg: QRCodeMsgClass
+    signature: str
+
     class Config:
         orm_mode = True

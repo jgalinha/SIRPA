@@ -2,7 +2,6 @@ from cryptography.exceptions import InvalidSignature, UnsupportedAlgorithm
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives import serialization as crypt_serialization
 from cryptography.hazmat.primitives.asymmetric import padding, rsa
-from icecream import ic
 from passlib.context import CryptContext
 
 pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")

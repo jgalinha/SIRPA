@@ -106,6 +106,36 @@ def check_student_by_id(db: Session, /, *, student_id: int) -> bool:
         )
 
 
+def get_student_user_id(db: Session, /, *, student_id: int) -> bool:
+    """get student user id
+
+    Args:
+        db (Session): database session
+        student_id (int): student id
+
+    Raises:
+        HTTPException: Error checking student
+
+    Returns:
+        int: user id
+    """
+    try:
+        student = db.query(Alunos).get(student_id)
+
+        if student:
+            return student.id_utilizador
+        return False
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=Utils.error_msg(
+                status.HTTP_409_CONFLICT,
+                "Error getting student user id",
+                error=repr(e),
+            ),
+        )
+
+
 def get_student_id_by_user_id(db: Session, /, *, user_id: int) -> bool:
     """Check if user_id and student_id match
 
