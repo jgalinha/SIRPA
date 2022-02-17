@@ -35,7 +35,7 @@ const ClassSchedule = (props) => {
   }, [props]);
 
   const handleQRCodeScan = (decodedText, decodedResult) => {
-    const obj = JSON.parse(decodedText.text);
+    const obj = JSON.parse(decodedText);
     console.log(obj);
   };
 
@@ -85,7 +85,7 @@ const ClassSchedule = (props) => {
             </div>
             {showReader && (
               <Html5QrcodeReader
-                fps={24}
+                fps={10}
                 qrbox={250}
                 disableFlip={false}
                 qrCodeSuccessCallback={handleQRCodeScan}
