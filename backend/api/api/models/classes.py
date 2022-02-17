@@ -14,7 +14,6 @@ from typing import Dict
 
 from db.aulas import Aulas, Presencas
 from fastapi import HTTPException, status
-from icecream import ic
 from models import user
 from models.student import get_student_id_by_user_id, get_student_user_id
 from models.teacher import get_teacher_nr_by_user_id
@@ -267,7 +266,6 @@ def create_QRCode(db: Session, request: CreateQRCodeClass, /, *, user_id: int) -
     encrypted_kr = user.get_kr(db, user_id)
     kr = crypt.load_priv_key(encrypted_kr, password)
     sign_msg = crypt.sign(kr, bytes(json.dumps(msg), "utf-8"))
-    ic(sign_msg)
     sign_msg_b64 = base64.encodebytes(sign_msg)
     # string_msg = sign_msg_b64.decode("utf-8")
     # pub_key = user.get_ku(db, user_id)

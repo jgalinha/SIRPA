@@ -7,7 +7,7 @@ This module define the pydantic schema of teacher data
 @Email: j.b.galinha@gmail.com
 """
 
-from datetime import date, time
+from datetime import date, datetime, time
 from typing import List
 
 from pydantic import BaseModel
@@ -49,7 +49,7 @@ class TodayTeacherStudent(BaseModel):
 
 class TodayTeacherPresences(BaseModel):
     id_aluno: int
-    confirmacao: time
+    confirmacao: datetime
 
     aluno: TodayTeacherStudent
 

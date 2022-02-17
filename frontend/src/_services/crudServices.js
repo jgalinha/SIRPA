@@ -28,7 +28,8 @@ const postAPI = async (
   authCtx,
   endPoint,
   body,
-  setter = () => {},
+  setter,
+  setError,
   config = {}
 ) => {
   try {
@@ -43,12 +44,28 @@ const postAPI = async (
       mode: "cors",
     })
       .then((response) => {
+        if (!response.ok) {
+          return Promise.reject(response);
+        }
         return response.json();
       })
       .then((data) => {
         setter(data);
+        return data;
+      })
+      .catch((error) => {
+        if (error.text) {
+          error.text().then((error_msg) => {
+            const obj = JSON.parse(error_msg);
+            const msg = obj.detail.error.error_detail;
+            setError({ ...obj.detail.error });
+          });
+        }
       });
-  } catch (error) {}
+    return data;
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 const crudService = {

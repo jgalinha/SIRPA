@@ -26,12 +26,13 @@ router = APIRouter(tags=["Aulas"], prefix="/class")
 dependencies = [Depends(get_current_user)]
 
 
-@router.post("/chekin", status_code=status.HTTP_200_OK)
+@router.post("/checkin", status_code=status.HTTP_200_OK, dependencies=dependencies)
 def read_qrcode(
     request: ReadQRCodeClass,
     db: Session = Depends(get_db),
     user_id: int = Depends(get_active_user),
 ) -> Any:
+    print("any")
     return classes.read_QRCode(db, request, user_id=user_id)
 
 
@@ -40,7 +41,7 @@ def create_qrcode(
     request: CreateQRCodeClass,
     db: Session = Depends(get_db),
     user_id: int = Depends(get_active_user),
-):
+) -> Any:
     return classes.create_QRCode(db, request, user_id=user_id)
 
 

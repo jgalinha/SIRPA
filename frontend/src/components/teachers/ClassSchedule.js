@@ -5,6 +5,7 @@ import AuthContext from "../../store/auth-context";
 import { CameraIcon } from "@heroicons/react/outline";
 import crudService from "../../_services/crudServices";
 import Html5QrcodeReader from "../UI/Html5QrcodeReader";
+import { toast } from "react-hot-toast";
 
 const ClassSchedule = (props) => {
   moment.locale("pt");
@@ -24,6 +25,11 @@ const ClassSchedule = (props) => {
     },
   ]);
   const [showReader, setShowReader] = useState(false);
+  const [erro, setErro] = useState({
+    code: null,
+    msg: null,
+    error_detail: null,
+  });
 
   useEffect(() => {
     // TODO: order by hour
@@ -34,9 +40,31 @@ const ClassSchedule = (props) => {
     );
   }, [props]);
 
+  useEffect(() => {
+    if (erro.msg !== null) {
+      toast.error(erro.error_detail);
+    }
+  }, [erro]);
+
+  const registerPresence = (data) => {
+    const result = crudService.postAPI(
+      authCtx,
+      "/class/checkin",
+      { ...data },
+      () => {},
+      setErro
+    );
+    return result;
+  };
+
   const handleQRCodeScan = (decodedText, decodedResult) => {
     const obj = JSON.parse(decodedText);
-    console.log(obj);
+    const data = registerPresence(obj);
+    if (data.value !== undefined) {
+      console.log(data);
+      toast.success("Registado!");
+    }
+    //setShowReader(false);
   };
 
   return (

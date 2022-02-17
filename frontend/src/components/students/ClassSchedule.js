@@ -1,14 +1,11 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import moment from "moment";
 import "moment/locale/pt";
 import { QrcodeIcon } from "@heroicons/react/outline";
-import AuthContext from "../../store/auth-context";
-import crudService from "../../_services/crudServices";
 import PasswordModal from "../UI/PasswordModal";
 
 const ClassSchedule = (props) => {
   moment.locale("pt");
-  const authCtx = useContext(AuthContext);
   const [ucs, setUcs] = useState([
     {
       id_uc: "",

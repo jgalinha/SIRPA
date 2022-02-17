@@ -9,10 +9,6 @@ export default function PasswordModal(props) {
   const authCtx = useContext(AuthContext);
   const passwordInput = useRef();
   const [showQRCode, setShowQRCode] = useState(false);
-  const [presenca, setPresenca] = useState({
-    id_aula: "",
-    password: "",
-  });
   const [qrcode, setQrcode] = useState("");
   function closeModal() {
     setShowQRCode(false);
@@ -25,7 +21,8 @@ export default function PasswordModal(props) {
       authCtx,
       "/class/qrcode",
       { ...data },
-      setQrcode
+      setQrcode,
+      () => {}
     );
   };
 
