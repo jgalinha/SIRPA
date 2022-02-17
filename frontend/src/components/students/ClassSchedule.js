@@ -27,7 +27,7 @@ const ClassSchedule = (props) => {
     // TODO: order by hour
     setUcs(
       props.schedule.ucs.sort((a, b) => {
-        return a.data - b.data;
+        return a.data > b.data;
       })
     );
     setIdAluno(props.schedule.id_aluno);
