@@ -267,10 +267,5 @@ def create_QRCode(db: Session, request: CreateQRCodeClass, /, *, user_id: int) -
     kr = crypt.load_priv_key(encrypted_kr, password)
     sign_msg = crypt.sign(kr, bytes(json.dumps(msg), "utf-8"))
     sign_msg_b64 = base64.encodebytes(sign_msg)
-    # string_msg = sign_msg_b64.decode("utf-8")
-    # pub_key = user.get_ku(db, user_id)
-    # ku = crypt.load_pub_key(pub_key)
-    # msg_64 = base64.decodebytes(sign_msg_b64)
-    # ver_msg = crypt.verify(ku, bytes(json.dumps(msg), "utf-8"), msg_64)
-    # ic(ver_msg)
+
     return {"signature": sign_msg_b64, "msg": msg}

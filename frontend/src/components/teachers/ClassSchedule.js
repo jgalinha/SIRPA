@@ -5,7 +5,7 @@ import AuthContext from "../../store/auth-context";
 import { CameraIcon } from "@heroicons/react/outline";
 import crudService from "../../_services/crudServices";
 import Html5QrcodeReader from "../UI/Html5QrcodeReader";
-import { toast } from "react-hot-toast";
+import { toast, Toaster } from "react-hot-toast";
 
 const ClassSchedule = (props) => {
   moment.locale("pt");
@@ -60,11 +60,11 @@ const ClassSchedule = (props) => {
   const handleQRCodeScan = (decodedText, decodedResult) => {
     const obj = JSON.parse(decodedText);
     const data = registerPresence(obj);
-    if (data.value !== undefined) {
-      console.log(data);
-      toast.success("Registado!");
+    console.log(data.JSON());
+    if (data) {
+      toast.success("Registado");
     }
-    //setShowReader(false);
+    setShowReader(false);
   };
 
   return (
