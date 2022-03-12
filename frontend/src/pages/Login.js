@@ -37,7 +37,7 @@ const Login = (props) => {
     };
     const login = await userService.user_login(body, setIsLoading, authCtx);
     if (login) {
-      history.replace("/");
+      history.replace("/today");
     }
   };
 

@@ -60,7 +60,6 @@ const ClassSchedule = (props) => {
   const handleQRCodeScan = (decodedText, decodedResult) => {
     const obj = JSON.parse(decodedText);
     const data = registerPresence(obj);
-    console.log(data.JSON());
     if (data) {
       toast.success("Registado");
     }

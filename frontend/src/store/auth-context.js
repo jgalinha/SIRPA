@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useHistory } from "react-router-dom";
 
 let logoutTimer;
 
@@ -74,7 +73,6 @@ const getStoredData = () => {
 
 export const AuthContextProvider = (props) => {
   // FIXME: Change to cookies when in tls
-  const history = useHistory();
   const storedData = getStoredData();
 
   const [token, setToken] = useState(storedData.token);
@@ -91,8 +89,7 @@ export const AuthContextProvider = (props) => {
     // FIXME: Change to cookies when in tls
     localStorage.removeItem("token");
     localStorage.removeItem("userData");
-    history.replace("/login");
-  }, [history]);
+  }, []);
 
   const loginHandler = (token, userData) => {
     setToken(token);
@@ -108,8 +105,9 @@ export const AuthContextProvider = (props) => {
   };
 
   useEffect(() => {
-    if (token && userData) {
-      logoutTimer = setTimeout(logoutHandler, userData.exp);
+    if (!!token && !!userData) {
+      const extTime = calculateExpirationTime(userData.exp);
+      logoutTimer = setTimeout(logoutHandler, extTime);
     }
   }, [token, userData, logoutHandler]);
 
